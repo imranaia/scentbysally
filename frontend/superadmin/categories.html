@@ -1,0 +1,829 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Manage Categories</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 55rem;
+      }
+
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar (reuse from dashboard) */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .add-btn {
+        padding: 0.8rem 2rem;
+        background: var(--white);
+        border-radius: 10px;
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      .add-btn:hover {
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      /* Categories Grid */
+      .categories-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .category-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .category-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .category-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      .category-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .category-action {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.3rem 0.8rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+      }
+
+      .category-action:hover {
+        border-color: var(--white);
+      }
+
+      /* Types List */
+      .types-list {
+        margin-bottom: 1rem;
+      }
+
+      .type-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem;
+        background: var(--black-lighter);
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+      }
+
+      .type-info {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+      }
+
+      .type-name {
+        font-weight: 500;
+      }
+
+      .type-multiplier {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .type-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .type-btn {
+        background: none;
+        border: none;
+        color: var(--gray-light);
+        cursor: pointer;
+        font-size: 1rem;
+      }
+
+      .type-btn:hover {
+        color: var(--white);
+      }
+
+      .add-type-btn {
+        width: 100%;
+        padding: 0.8rem;
+        background: none;
+        border: 1px dashed var(--gray-dark);
+        border-radius: 10px;
+        color: var(--gray-light);
+        cursor: pointer;
+        margin-top: 0.5rem;
+      }
+
+      .add-type-btn:hover {
+        border-color: var(--white);
+        color: var(--white);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .type-multiplier-input {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .type-multiplier-input input {
+        flex: 1;
+      }
+
+      .type-multiplier-input span {
+        color: var(--gray-light);
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .categories-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👑</div>
+          <div class="admin-name">Sally</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="categories.html" class="admin-menu-link active"
+              >Categories</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="buyers.html" class="admin-menu-link">Buyers</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="admins.html" class="admin-menu-link">Mini-Admins</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="reports.html" class="admin-menu-link">Reports</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Categories & Types</h1>
+          <button class="add-btn" onclick="openCategoryModal()">
+            + New Category
+          </button>
+        </div>
+
+        <!-- Categories Grid -->
+        <div class="categories-grid">
+          <!-- Designer Category -->
+          <div class="category-card floating-card-light">
+            <div class="category-header">
+              <h2 class="category-name">Designer</h2>
+              <div class="category-actions">
+                <button class="category-action" onclick="editCategory(1)">
+                  Edit
+                </button>
+                <button class="category-action" onclick="deleteCategory(1)">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="types-list">
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">100ml</span>
+                  <span class="type-multiplier">Base Price × 1.0</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(1, '100ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(1, '100ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">50ml</span>
+                  <span class="type-multiplier">Base Price × 0.7</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(1, '50ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(1, '50ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">30ml</span>
+                  <span class="type-multiplier">Base Price × 0.5</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(1, '30ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(1, '30ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button class="add-type-btn" onclick="openTypeModal(1, 'Designer')">
+              + Add Size Type
+            </button>
+          </div>
+
+          <!-- Oil Perfume Category -->
+          <div class="category-card floating-card-light">
+            <div class="category-header">
+              <h2 class="category-name">Oil Perfume</h2>
+              <div class="category-actions">
+                <button class="category-action" onclick="editCategory(2)">
+                  Edit
+                </button>
+                <button class="category-action" onclick="deleteCategory(2)">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="types-list">
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">30ml</span>
+                  <span class="type-multiplier">Base Price × 1.0</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(2, '30ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(2, '30ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">20ml</span>
+                  <span class="type-multiplier">Base Price × 0.8</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(2, '20ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(2, '20ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">10ml</span>
+                  <span class="type-multiplier">Base Price × 0.5</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(2, '10ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(2, '10ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button
+              class="add-type-btn"
+              onclick="openTypeModal(2, 'Oil Perfume')"
+            >
+              + Add Size Type
+            </button>
+          </div>
+
+          <!-- Niche Category (Example) -->
+          <div class="category-card floating-card-light">
+            <div class="category-header">
+              <h2 class="category-name">Niche</h2>
+              <div class="category-actions">
+                <button class="category-action" onclick="editCategory(3)">
+                  Edit
+                </button>
+                <button class="category-action" onclick="deleteCategory(3)">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <div class="types-list">
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">75ml</span>
+                  <span class="type-multiplier">Base Price × 1.0</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(3, '75ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(3, '75ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+              <div class="type-item">
+                <div class="type-info">
+                  <span class="type-name">50ml</span>
+                  <span class="type-multiplier">Base Price × 0.8</span>
+                </div>
+                <div class="type-actions">
+                  <button class="type-btn" onclick="editType(3, '50ml')">
+                    ✎
+                  </button>
+                  <button class="type-btn" onclick="deleteType(3, '50ml')">
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <button class="add-type-btn" onclick="openTypeModal(3, 'Niche')">
+              + Add Size Type
+            </button>
+          </div>
+        </div>
+
+        <!-- Category Info -->
+        <div
+          style="
+            background: var(--black);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+          "
+        >
+          <h3 style="margin-bottom: 1rem">About Category Types</h3>
+          <p style="color: var(--gray-light)">
+            Types define the available sizes for products in each category. The
+            price multiplier determines how the base price is adjusted for each
+            size. For example, if base price is ₦45,000 and multiplier is 0.7,
+            the price becomes ₦31,500.
+          </p>
+        </div>
+      </main>
+    </div>
+
+    <!-- Category Modal -->
+    <div class="modal" id="category-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="category-modal-title">Add New Category</h2>
+          <button class="modal-close" onclick="closeCategoryModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="category-form" onsubmit="saveCategory(event)">
+          <div class="form-group">
+            <label class="form-label">Category Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="category-name"
+              placeholder="e.g., Designer, Oil Perfume"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description (Optional)</label>
+            <textarea
+              class="form-input"
+              id="category-description"
+              rows="2"
+              placeholder="Brief description of this category"
+            ></textarea>
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Save Category
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Type Modal -->
+    <div class="modal" id="type-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="type-modal-title">Add Size Type</h2>
+          <button class="modal-close" onclick="closeTypeModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="type-form" onsubmit="saveType(event)">
+          <div class="form-group">
+            <label class="form-label">Category</label>
+            <input
+              type="text"
+              class="form-input"
+              id="type-category"
+              readonly
+              disabled
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Size Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="type-name"
+              placeholder="e.g., 100ml, 50ml, 30ml"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Price Multiplier</label>
+            <div class="type-multiplier-input">
+              <input
+                type="number"
+                class="form-input"
+                id="type-multiplier"
+                step="0.1"
+                min="0.1"
+                max="2.0"
+                value="1.0"
+                required
+              />
+              <span>× Base Price</span>
+            </div>
+            <p
+              style="
+                color: var(--gray-light);
+                font-size: 0.8rem;
+                margin-top: 0.3rem;
+              "
+            >
+              Example: 0.7 means 70% of base price
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Sort Order</label>
+            <input
+              type="number"
+              class="form-input"
+              id="type-order"
+              value="0"
+              min="0"
+            />
+            <p
+              style="
+                color: var(--gray-light);
+                font-size: 0.8rem;
+                margin-top: 0.3rem;
+              "
+            >
+              Lower numbers appear first
+            </p>
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Save Size Type
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is superadmin
+        if (
+          !Scentbysally.isAuthenticated ||
+          Scentbysally.userRole !== "superadmin"
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Category Modal Functions
+      function openCategoryModal() {
+        document.getElementById("category-modal-title").textContent =
+          "Add New Category";
+        document.getElementById("category-form").reset();
+        document.getElementById("category-modal").classList.add("active");
+      }
+
+      function closeCategoryModal() {
+        document.getElementById("category-modal").classList.remove("active");
+      }
+
+      function editCategory(id) {
+        document.getElementById("category-modal-title").textContent =
+          "Edit Category";
+        // In real app, would load category data
+        document.getElementById("category-modal").classList.add("active");
+      }
+
+      function deleteCategory(id) {
+        if (
+          confirm(
+            "Are you sure you want to delete this category? This will affect all products in this category.",
+          )
+        ) {
+          console.log("Deleting category:", id);
+          showNotification("Category deleted", "success");
+        }
+      }
+
+      function saveCategory(event) {
+        event.preventDefault();
+
+        const category = {
+          name: document.getElementById("category-name").value,
+          description: document.getElementById("category-description").value,
+        };
+
+        console.log("Saving category:", category);
+        showNotification("Category saved successfully", "success");
+        closeCategoryModal();
+      }
+
+      // Type Modal Functions
+      function openTypeModal(categoryId, categoryName) {
+        document.getElementById("type-modal-title").textContent =
+          "Add Size Type";
+        document.getElementById("type-category").value = categoryName;
+        document.getElementById("type-form").reset();
+        document.getElementById("type-order").value = "0";
+        document.getElementById("type-multiplier").value = "1.0";
+        document.getElementById("type-modal").classList.add("active");
+      }
+
+      function closeTypeModal() {
+        document.getElementById("type-modal").classList.remove("active");
+      }
+
+      function editType(categoryId, typeName) {
+        document.getElementById("type-modal-title").textContent =
+          "Edit Size Type";
+        document.getElementById("type-name").value = typeName;
+        document.getElementById("type-modal").classList.add("active");
+      }
+
+      function deleteType(categoryId, typeName) {
+        if (confirm(`Are you sure you want to delete ${typeName}?`)) {
+          console.log("Deleting type:", { categoryId, typeName });
+          showNotification("Size type deleted", "success");
+        }
+      }
+
+      function saveType(event) {
+        event.preventDefault();
+
+        const type = {
+          name: document.getElementById("type-name").value,
+          multiplier: document.getElementById("type-multiplier").value,
+          order: document.getElementById("type-order").value,
+        };
+
+        console.log("Saving type:", type);
+        showNotification("Size type saved successfully", "success");
+        closeTypeModal();
+      }
+    </script>
+  </body>
+</html>

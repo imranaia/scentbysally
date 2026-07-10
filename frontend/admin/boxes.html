@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Admin Boxes</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .add-btn {
+        padding: 0.8rem 2rem;
+        background: var(--white);
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      .add-btn:hover {
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .boxes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .box-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .box-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--white);
+        box-shadow: 0 10px 20px -10px var(--glow-color);
+      }
+
+      .box-header {
+        background: linear-gradient(145deg, #222, #111);
+        padding: 1.5rem;
+        position: relative;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .box-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--white);
+        color: var(--black);
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .box-icon {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .box-name {
+        font-size: 1.3rem;
+        font-weight: 600;
+      }
+
+      .box-content {
+        padding: 1.5rem;
+      }
+
+      .box-products {
+        margin-bottom: 1rem;
+      }
+
+      .box-product-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed var(--gray-dark);
+      }
+
+      .box-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      .box-price {
+        font-size: 1.2rem;
+        font-weight: 700;
+      }
+
+      .box-stock {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .box-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .box-action {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        padding: 0.3rem 1rem;
+        cursor: pointer;
+      }
+
+      .box-action:hover {
+        border-color: var(--white);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 600px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .product-selector {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../buyer/products.html" class="nav-link">Shop</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👤</div>
+          <div class="admin-name">John Smith</div>
+          <div class="admin-role">Mini-Admin</div>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <h4 style="margin-bottom: 0.5rem">Your Permissions:</h4>
+          <span class="permission-badge">Inventory</span>
+          <span class="permission-badge">Orders</span>
+          <span class="permission-badge">Customers</span>
+          <span class="permission-badge">Boxes</span>
+          <span class="permission-badge">Custom Orders</span>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link active">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="orders.html" class="admin-menu-link">Orders</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="customers.html" class="admin-menu-link">Customers</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Box Management</h1>
+          <button class="add-btn" onclick="openBoxModal()">
+            + Create New Box
+          </button>
+        </div>
+
+        <!-- Boxes Grid -->
+        <div class="boxes-grid">
+          <!-- Box 1 -->
+          <div class="box-card">
+            <div class="box-header">
+              <div class="box-badge">Active</div>
+              <div class="box-icon">🎁</div>
+              <h3 class="box-name">The Duet</h3>
+            </div>
+            <div class="box-content">
+              <div class="box-products">
+                <div class="box-product-item">
+                  <span>Midnight Oud (100ml)</span>
+                  <span>₦45,000</span>
+                </div>
+                <div class="box-product-item">
+                  <span>Rose Noir (30ml)</span>
+                  <span>₦38,000</span>
+                </div>
+              </div>
+              <div class="box-footer">
+                <div>
+                  <div class="box-price">₦83,000</div>
+                  <div class="box-stock">Stock: 15</div>
+                </div>
+                <div class="box-actions">
+                  <button class="box-action" onclick="editBox(1)">Edit</button>
+                  <button class="box-action" onclick="duplicateBox(1)">
+                    Copy
+                  </button>
+                  <button class="box-action" onclick="toggleBox(1)">
+                    Disable
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Box 2 -->
+          <div class="box-card">
+            <div class="box-header">
+              <div class="box-badge">Popular</div>
+              <div class="box-icon">🎁</div>
+              <h3 class="box-name">The Triptych</h3>
+            </div>
+            <div class="box-content">
+              <div class="box-products">
+                <div class="box-product-item">
+                  <span>Amber Mystique (50ml)</span>
+                  <span>₦38,000</span>
+                </div>
+                <div class="box-product-item">
+                  <span>Woody Elegance (50ml)</span>
+                  <span>₦35,000</span>
+                </div>
+                <div class="box-product-item">
+                  <span>Citrus Bliss (30ml)</span>
+                  <span>₦32,000</span>
+                </div>
+              </div>
+              <div class="box-footer">
+                <div>
+                  <div class="box-price">₦105,000</div>
+                  <div class="box-stock">Stock: 8</div>
+                </div>
+                <div class="box-actions">
+                  <button class="box-action" onclick="editBox(2)">Edit</button>
+                  <button class="box-action" onclick="duplicateBox(2)">
+                    Copy
+                  </button>
+                  <button class="box-action" onclick="toggleBox(2)">
+                    Disable
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Box 3 -->
+          <div class="box-card">
+            <div class="box-header">
+              <div class="box-badge">Best Value</div>
+              <div class="box-icon">🎁</div>
+              <h3 class="box-name">The Collection</h3>
+            </div>
+            <div class="box-content">
+              <div class="box-products">
+                <div class="box-product-item">
+                  <span>All 6 Scents (30ml each)</span>
+                  <span>Complete Set</span>
+                </div>
+              </div>
+              <div class="box-footer">
+                <div>
+                  <div class="box-price">₦195,000</div>
+                  <div class="box-stock">Stock: 5</div>
+                </div>
+                <div class="box-actions">
+                  <button class="box-action" onclick="editBox(3)">Edit</button>
+                  <button class="box-action" onclick="duplicateBox(3)">
+                    Copy
+                  </button>
+                  <button class="box-action" onclick="toggleBox(3)">
+                    Disable
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create Box Modal -->
+    <div class="modal" id="box-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Create New Box</h2>
+          <button class="modal-close" onclick="closeBoxModal()">&times;</button>
+        </div>
+
+        <form onsubmit="saveBox(event)">
+          <div class="form-group">
+            <label class="form-label">Box Name</label>
+            <input type="text" class="form-input" id="box-name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-input" id="box-desc" rows="2"></textarea>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Box Size</label>
+            <select class="form-input" id="box-size">
+              <option value="2">2 Pieces</option>
+              <option value="3">3 Pieces</option>
+              <option value="6">6 Pieces</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Products</label>
+            <div id="product-list">
+              <div class="product-selector">
+                <select class="form-input" style="margin-bottom: 0.5rem">
+                  <option>Select Product</option>
+                  <option>Midnight Oud</option>
+                  <option>Rose Noir</option>
+                  <option>Amber Mystique</option>
+                </select>
+                <select class="form-input">
+                  <option>Select Size</option>
+                  <option>100ml</option>
+                  <option>50ml</option>
+                  <option>30ml</option>
+                </select>
+              </div>
+            </div>
+            <button
+              type="button"
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 0.5rem"
+              onclick="addProductField()"
+            >
+              + Add Product
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Discount (%)</label>
+            <input
+              type="number"
+              class="form-input"
+              id="box-discount"
+              value="0"
+              min="0"
+              max="100"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Initial Stock</label>
+            <input
+              type="number"
+              class="form-input"
+              id="box-stock"
+              value="10"
+              min="0"
+            />
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Create Box
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 Scentbysally. All rights reserved. | Contact: 09169701140
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (
+          !Scentbysally.isAuthenticated ||
+          (Scentbysally.userRole !== "admin" &&
+            Scentbysally.userRole !== "superadmin")
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      function openBoxModal() {
+        document.getElementById("box-modal").classList.add("active");
+      }
+
+      function closeBoxModal() {
+        document.getElementById("box-modal").classList.remove("active");
+      }
+
+      function addProductField() {
+        const list = document.getElementById("product-list");
+        const newSelector = document.createElement("div");
+        newSelector.className = "product-selector";
+        newSelector.innerHTML = `
+                <select class="form-input" style="margin-bottom: 0.5rem;">
+                    <option>Select Product</option>
+                    <option>Midnight Oud</option>
+                    <option>Rose Noir</option>
+                    <option>Amber Mystique</option>
+                </select>
+                <select class="form-input">
+                    <option>Select Size</option>
+                    <option>100ml</option>
+                    <option>50ml</option>
+                    <option>30ml</option>
+                </select>
+            `;
+        list.appendChild(newSelector);
+      }
+
+      function saveBox(event) {
+        event.preventDefault();
+        showNotification("Box created successfully", "success");
+        closeBoxModal();
+      }
+
+      function editBox(id) {
+        showNotification("Edit box feature", "info");
+      }
+
+      function duplicateBox(id) {
+        showNotification("Box duplicated", "success");
+      }
+
+      function toggleBox(id) {
+        const btn = event.target;
+        if (btn.textContent === "Disable") {
+          btn.textContent = "Enable";
+          showNotification("Box disabled", "info");
+        } else {
+          btn.textContent = "Disable";
+          showNotification("Box enabled", "success");
+        }
+      }
+    </script>
+  </body>
+</html>

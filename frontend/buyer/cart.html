@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Shopping Cart</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .cart-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 2rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .cart-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .cart-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 5%;
+      }
+
+      .cart-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+      }
+
+      .cart-items {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .cart-summary {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .summary-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        color: var(--gray-light);
+      }
+
+      .summary-total {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      .promo-section {
+        margin: 1.5rem 0;
+        padding: 1.5rem 0;
+        border-top: 1px solid var(--white-transparent);
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .promo-input {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .checkout-btn {
+        width: 100%;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .continue-shopping {
+        display: block;
+        text-align: center;
+        color: var(--gray-light);
+        text-decoration: none;
+      }
+
+      .continue-shopping:hover {
+        color: var(--white);
+      }
+
+      .empty-cart {
+        text-align: center;
+        padding: 3rem;
+      }
+
+      .empty-cart-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .cart-wrapper {
+          grid-template-columns: 1fr;
+        }
+
+        .cart-summary {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Cart Header -->
+    <div class="cart-header">
+      <h1 class="cart-title glow-text">Shopping Cart</h1>
+    </div>
+
+    <!-- Cart Container -->
+    <div class="cart-container">
+      <div class="cart-wrapper">
+        <!-- Cart Items -->
+        <div class="cart-items floating-card" id="cart-items">
+          <!-- Cart items will be loaded dynamically via JavaScript -->
+          <div class="empty-cart">
+            <div class="empty-cart-icon">🛒</div>
+            <h2 style="margin-bottom: 1rem">Your cart is empty</h2>
+            <p style="color: var(--gray-light); margin-bottom: 2rem">
+              Start shopping to add items to your cart
+            </p>
+            <a href="products.html" class="btn">Shop Now</a>
+          </div>
+        </div>
+
+        <!-- Cart Summary -->
+        <div
+          class="cart-summary floating-card"
+          id="cart-summary"
+          style="display: none"
+        >
+          <h3 class="summary-title">Order Summary</h3>
+
+          <div id="summary-details">
+            <div class="summary-row">
+              <span>Subtotal</span>
+              <span id="summary-subtotal">₦0</span>
+            </div>
+            <div class="summary-row">
+              <span>Delivery</span>
+              <span id="summary-delivery">₦2,500</span>
+            </div>
+            <div
+              class="summary-row"
+              style="color: var(--gray-light); font-size: 0.9rem"
+            >
+              <span>Commission (₦500/item)</span>
+              <span id="summary-commission">₦0</span>
+            </div>
+          </div>
+
+          <div class="promo-section">
+            <h4 style="margin-bottom: 1rem">Have a promo code?</h4>
+            <div class="promo-input">
+              <input
+                type="text"
+                class="form-input"
+                id="promo-code"
+                placeholder="Enter code"
+              />
+              <button class="btn btn-outline" onclick="applyPromoCode()">
+                Apply
+              </button>
+            </div>
+          </div>
+
+          <div class="summary-total">
+            <div class="summary-row">
+              <span>Total</span>
+              <span id="summary-total">₦0</span>
+            </div>
+          </div>
+
+          <button class="btn checkout-btn glow" onclick="proceedToCheckout()">
+            Proceed to Checkout
+          </button>
+          <a href="products.html" class="continue-shopping"
+            >Continue Shopping →</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+      // Override displayCart to work with our new layout
+      function displayCart() {
+        const cartContainer = document.getElementById("cart-items");
+        const summaryContainer = document.getElementById("cart-summary");
+
+        if (Scentbysally.cart.length === 0) {
+          cartContainer.innerHTML = `
+                    <div class="empty-cart">
+                        <div class="empty-cart-icon">🛒</div>
+                        <h2 style="margin-bottom: 1rem;">Your cart is empty</h2>
+                        <p style="color: var(--gray-light); margin-bottom: 2rem;">Start shopping to add items to your cart</p>
+                        <a href="products.html" class="btn">Shop Now</a>
+                    </div>
+                `;
+          summaryContainer.style.display = "none";
+          return;
+        }
+
+        summaryContainer.style.display = "block";
+
+        // Calculate totals
+        let subtotal = 0;
+        let itemsHtml = "";
+
+        Scentbysally.cart.forEach((item, index) => {
+          const itemTotal = item.product.price * item.quantity;
+          subtotal += itemTotal;
+
+          itemsHtml += `
+                    <div class="cart-item" style="margin-bottom: 1rem; padding: 1rem; background: var(--black); border-radius: 10px;">
+                        <div style="display: flex; gap: 1rem; align-items: center;">
+                            <img src="${item.product.image || "https://via.placeholder.com/60x60/000000/ffffff?text=Perfume"}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">
+                            <div style="flex: 1;">
+                                <h4 style="margin-bottom: 0.2rem;">${item.product.name}</h4>
+                                <p style="color: var(--gray-light); font-size: 0.9rem;">${item.type} • ₦${item.product.price.toLocaleString()}</p>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <button class="quantity-btn" style="width: 30px; height: 30px;" onclick="updateCartItem(${index}, ${item.quantity - 1})">-</button>
+                                <span style="min-width: 30px; text-align: center;">${item.quantity}</span>
+                                <button class="quantity-btn" style="width: 30px; height: 30px;" onclick="updateCartItem(${index}, ${item.quantity + 1})">+</button>
+                            </div>
+                            <div style="font-weight: 600; min-width: 80px; text-align: right;">
+                                ₦${itemTotal.toLocaleString()}
+                            </div>
+                            <button class="btn btn-outline" style="padding: 0.3rem 1rem;" onclick="removeCartItem(${index})">×</button>
+                        </div>
+                    </div>
+                `;
+        });
+
+        cartContainer.innerHTML = itemsHtml;
+
+        // Update summary
+        const deliveryFee = subtotal > 50000 ? 0 : 2500;
+        const commission = Scentbysally.cart.length * 500;
+        const total = subtotal + deliveryFee;
+
+        document.getElementById("summary-subtotal").textContent =
+          `₦${subtotal.toLocaleString()}`;
+        document.getElementById("summary-delivery").textContent =
+          deliveryFee === 0 ? "Free" : `₦${deliveryFee.toLocaleString()}`;
+        document.getElementById("summary-commission").textContent =
+          `₦${commission.toLocaleString()}`;
+        document.getElementById("summary-total").textContent =
+          `₦${total.toLocaleString()}`;
+      }
+
+      // Proceed to checkout
+      function proceedToCheckout() {
+        if (!Scentbysally.isAuthenticated) {
+          showNotification("Please login to checkout", "error");
+          window.location.href = "../login.html?redirect=cart.html";
+          return;
+        }
+        window.location.href = "checkout.html";
+      }
+
+      // Apply promo code
+      function applyPromoCode() {
+        const code = document.getElementById("promo-code").value;
+        if (!code) {
+          showNotification("Please enter a promo code", "error");
+          return;
+        }
+
+        // Simulate promo code validation
+        if (code.toUpperCase() === "SALLY10") {
+          showNotification("10% discount applied!", "success");
+          // Recalculate with discount (would be implemented in real app)
+        } else if (code.toUpperCase() === "FREESHIP") {
+          showNotification("Free delivery applied!", "success");
+          document.getElementById("summary-delivery").textContent = "Free";
+          // Recalculate total
+        } else {
+          showNotification("Invalid promo code", "error");
+        }
+      }
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+        displayCart();
+      });
+    </script>
+  </body>
+</html>

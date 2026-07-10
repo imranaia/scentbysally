@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Admin Products</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .permission-note {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        background: var(--black);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+      }
+
+      /* Search */
+      .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.8rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      .filter-select {
+        padding: 0.8rem 2rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      /* Products Grid */
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .product-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+      }
+
+      .product-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--white);
+        box-shadow: 0 10px 20px -10px var(--glow-color);
+      }
+
+      .product-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .product-info {
+        padding: 1.5rem;
+      }
+
+      .product-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .product-category {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .product-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0.5rem 0;
+      }
+
+      .product-stock {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+      }
+
+      .stock-badge {
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .stock-in {
+        background: #4caf5020;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+      }
+
+      .stock-low {
+        background: #f4433620;
+        color: #f44336;
+        border: 1px solid #f44336;
+      }
+
+      .product-sizes {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin: 1rem 0;
+      }
+
+      .size-tag {
+        padding: 0.2rem 0.8rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        border-radius: 20px;
+        font-size: 0.7rem;
+      }
+
+      .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 1rem;
+      }
+
+      .action-btn {
+        flex: 1;
+        padding: 0.5rem;
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .action-btn:hover:not(:disabled) {
+        border-color: var(--white);
+      }
+
+      .action-btn:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+
+      .action-btn.edit-allowed {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .stock-update {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .stock-update input {
+        flex: 1;
+        padding: 0.5rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .search-bar {
+          flex-direction: column;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../buyer/products.html" class="nav-link">Shop</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👤</div>
+          <div class="admin-name">John Smith</div>
+          <div class="admin-role">Mini-Admin</div>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <h4 style="margin-bottom: 0.5rem">Your Permissions:</h4>
+          <span class="permission-badge">Inventory</span>
+          <span class="permission-badge">Orders</span>
+          <span class="permission-badge">Customers</span>
+          <span class="permission-badge">Boxes</span>
+          <span class="permission-badge">Custom Orders</span>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link active">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="orders.html" class="admin-menu-link">Orders</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="customers.html" class="admin-menu-link">Customers</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Products</h1>
+          <span class="permission-note"
+            >🔍 View Only Mode - Contact Super Admin for edits</span
+          >
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search products..."
+            id="searchInput"
+            onkeyup="searchProducts()"
+          />
+          <select
+            class="filter-select"
+            id="categoryFilter"
+            onchange="filterProducts()"
+          >
+            <option value="all">All Categories</option>
+            <option value="designer">Designer</option>
+            <option value="oil">Oil Perfume</option>
+            <option value="niche">Niche</option>
+          </select>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="products-grid">
+          <!-- Product 1 -->
+          <div class="product-card">
+            <img
+              src="https://via.placeholder.com/300x300/000000/ffffff?text=Midnight+Oud"
+              alt="Midnight Oud"
+              class="product-image"
+            />
+            <div class="product-info">
+              <div class="product-header">
+                <h3 class="product-name">Midnight Oud</h3>
+                <span class="product-category">Designer</span>
+              </div>
+              <div class="product-price">₦45,000</div>
+              <div class="product-stock">
+                <span class="stock-badge stock-in">In Stock</span>
+                <span>23 units</span>
+              </div>
+              <div class="product-sizes">
+                <span class="size-tag">100ml</span>
+                <span class="size-tag">50ml</span>
+                <span class="size-tag">30ml</span>
+              </div>
+              <div class="product-actions">
+                <button class="action-btn" onclick="viewProduct(1)">
+                  View
+                </button>
+                <button class="action-btn" disabled>Edit</button>
+                <button class="action-btn" onclick="checkStock(1)">
+                  Stock
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div class="product-card">
+            <img
+              src="https://via.placeholder.com/300x300/000000/ffffff?text=Rose+Noir"
+              alt="Rose Noir"
+              class="product-image"
+            />
+            <div class="product-info">
+              <div class="product-header">
+                <h3 class="product-name">Rose Noir</h3>
+                <span class="product-category">Oil Perfume</span>
+              </div>
+              <div class="product-price">₦38,000</div>
+              <div class="product-stock">
+                <span class="stock-badge stock-low">Low Stock</span>
+                <span>2 units</span>
+              </div>
+              <div class="product-sizes">
+                <span class="size-tag">30ml</span>
+                <span class="size-tag">20ml</span>
+                <span class="size-tag">10ml</span>
+              </div>
+              <div class="product-actions">
+                <button class="action-btn" onclick="viewProduct(2)">
+                  View
+                </button>
+                <button class="action-btn" disabled>Edit</button>
+                <button class="action-btn" onclick="checkStock(2)">
+                  Stock
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div class="product-card">
+            <img
+              src="https://via.placeholder.com/300x300/000000/ffffff?text=Amber+Mystique"
+              alt="Amber Mystique"
+              class="product-image"
+            />
+            <div class="product-info">
+              <div class="product-header">
+                <h3 class="product-name">Amber Mystique</h3>
+                <span class="product-category">Designer</span>
+              </div>
+              <div class="product-price">₦52,000</div>
+              <div class="product-stock">
+                <span class="stock-badge stock-in">In Stock</span>
+                <span>8 units</span>
+              </div>
+              <div class="product-sizes">
+                <span class="size-tag">100ml</span>
+                <span class="size-tag">50ml</span>
+                <span class="size-tag">30ml</span>
+              </div>
+              <div class="product-actions">
+                <button class="action-btn" onclick="viewProduct(3)">
+                  View
+                </button>
+                <button class="action-btn" disabled>Edit</button>
+                <button class="action-btn" onclick="checkStock(3)">
+                  Stock
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4 -->
+          <div class="product-card">
+            <img
+              src="https://via.placeholder.com/300x300/000000/ffffff?text=Citrus+Bliss"
+              alt="Citrus Bliss"
+              class="product-image"
+            />
+            <div class="product-info">
+              <div class="product-header">
+                <h3 class="product-name">Citrus Bliss</h3>
+                <span class="product-category">Oil Perfume</span>
+              </div>
+              <div class="product-price">₦32,000</div>
+              <div class="product-stock">
+                <span class="stock-badge stock-low">Out of Stock</span>
+                <span>0 units</span>
+              </div>
+              <div class="product-sizes">
+                <span class="size-tag">30ml</span>
+                <span class="size-tag">20ml</span>
+                <span class="size-tag">10ml</span>
+              </div>
+              <div class="product-actions">
+                <button class="action-btn" onclick="viewProduct(4)">
+                  View
+                </button>
+                <button class="action-btn" disabled>Edit</button>
+                <button class="action-btn" onclick="checkStock(4)">
+                  Stock
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div style="margin-top: 2rem; display: flex; justify-content: center">
+          <ul class="pagination">
+            <li class="page-item">
+              <a href="#" class="page-link active">1</a>
+            </li>
+            <li class="page-item"><a href="#" class="page-link">2</a></li>
+            <li class="page-item"><a href="#" class="page-link">3</a></li>
+          </ul>
+        </div>
+      </main>
+    </div>
+
+    <!-- Stock Check Modal -->
+    <div class="modal" id="stock-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="stock-product-name">Stock Details - Midnight Oud</h2>
+          <button class="modal-close" onclick="closeStockModal()">
+            &times;
+          </button>
+        </div>
+
+        <div id="stock-details">
+          <table style="width: 100%">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Stock</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>100ml</td>
+                <td>15</td>
+                <td><span class="stock-badge stock-in">In Stock</span></td>
+              </tr>
+              <tr>
+                <td>50ml</td>
+                <td>8</td>
+                <td><span class="stock-badge stock-in">In Stock</span></td>
+              </tr>
+              <tr>
+                <td>30ml</td>
+                <td>0</td>
+                <td><span class="stock-badge stock-low">Out of Stock</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div style="margin-top: 2rem">
+          <p style="color: var(--gray-light)">
+            To update stock, please use the
+            <a href="inventory.html" style="color: var(--white)"
+              >Inventory Management</a
+            >
+            page.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 Scentbysally. All rights reserved. | Contact: 09169701140
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is authenticated and is admin
+        if (
+          !Scentbysally.isAuthenticated ||
+          (Scentbysally.userRole !== "admin" &&
+            Scentbysally.userRole !== "superadmin")
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Search products
+      function searchProducts() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const products = document.querySelectorAll(".product-card");
+
+        products.forEach((product) => {
+          const name = product
+            .querySelector(".product-name")
+            .textContent.toLowerCase();
+          product.style.display = name.includes(searchTerm) ? "block" : "none";
+        });
+      }
+
+      // Filter by category
+      function filterProducts() {
+        const category = document.getElementById("categoryFilter").value;
+        const products = document.querySelectorAll(".product-card");
+
+        products.forEach((product) => {
+          if (category === "all") {
+            product.style.display = "block";
+          } else {
+            const productCategory = product
+              .querySelector(".product-category")
+              .textContent.toLowerCase();
+            product.style.display = productCategory.includes(category)
+              ? "block"
+              : "none";
+          }
+        });
+      }
+
+      // View product details
+      function viewProduct(id) {
+        window.location.href = `../buyer/product.html?id=${id}&admin=true`;
+      }
+
+      // Check stock details
+      function checkStock(id) {
+        const productName = event.target
+          .closest(".product-card")
+          .querySelector(".product-name").textContent;
+        document.getElementById("stock-product-name").textContent =
+          `Stock Details - ${productName}`;
+        document.getElementById("stock-modal").classList.add("active");
+      }
+
+      function closeStockModal() {
+        document.getElementById("stock-modal").classList.remove("active");
+      }
+    </script>
+  </body>
+</html>

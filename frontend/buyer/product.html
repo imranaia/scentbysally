@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Midnight Oud</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .product-container {
+        max-width: 1400px;
+        margin: 2rem auto;
+        padding: 0 5%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      /* 3D Viewer */
+      .product-viewer {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        overflow: hidden;
+        height: 900px;
+        position: relative;
+        top: 100px;
+      }
+
+      .viewer-container {
+        width: 100%;
+        height: 100%;
+      }
+
+      #product-canvas {
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      .viewer-controls {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.8);
+        border-top: 1px solid var(--white-transparent);
+        margin-top: -50px;
+      }
+
+      .control-btn {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .control-btn:hover {
+        border-color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      /* Product Info */
+      .product-info-section {
+        padding: 2rem 0;
+      }
+
+      .product-category {
+        color: var(--gray-light);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .product-name {
+        font-size: 3.5rem;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+      }
+
+      .product-price {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        text-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .product-rating {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .stars {
+        display: flex;
+        gap: 0.2rem;
+      }
+
+      .star {
+        color: var(--gray-dark);
+        font-size: 1.2rem;
+      }
+
+      .star.filled {
+        color: var(--white);
+        text-shadow: 0 0 10px var(--glow-color);
+      }
+
+      .rating-count {
+        color: var(--gray-light);
+      }
+
+      .product-description {
+        color: var(--gray-light);
+        line-height: 1.8;
+        margin-bottom: 2rem;
+        font-size: 1.1rem;
+      }
+
+      /* Scent Notes */
+      .scent-notes {
+        margin-bottom: 2rem;
+      }
+
+      .scent-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .notes-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+      }
+
+      .note-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+      }
+
+      .note-type {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+      }
+
+      .note-name {
+        font-weight: 600;
+      }
+
+      /* Size Selection */
+      .size-selector {
+        margin-bottom: 2rem;
+      }
+
+      .size-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .size-options {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+
+      .size-option {
+        padding: 1rem 2rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 100px;
+        text-align: center;
+      }
+
+      .size-option:hover {
+        border-color: var(--white);
+      }
+
+      .size-option.selected {
+        border-color: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .size-price {
+        display: block;
+        font-size: 0.8rem;
+        margin-top: 0.3rem;
+        color: var(--gray-light);
+      }
+
+      .size-option.selected .size-price {
+        color: var(--black);
+      }
+
+      /* Quantity */
+      .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .quantity-btn {
+        width: 50px;
+        height: 50px;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+        font-size: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .quantity-btn:hover {
+        border-color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .quantity-input {
+        width: 80px;
+        height: 50px;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+        text-align: center;
+        font-size: 1.2rem;
+      }
+
+      /* Action Buttons */
+      .action-buttons {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 3rem;
+      }
+
+      .add-to-cart {
+        flex: 2;
+        padding: 1.2rem;
+        font-size: 1.1rem;
+      }
+
+      .wishlist-btn {
+        flex: 1;
+        padding: 1.2rem;
+        background: var(--black-lighter);
+      }
+
+      /* Reviews Section */
+      .reviews-section {
+        grid-column: 1 / -1;
+        margin-top: 4rem;
+      }
+
+      .reviews-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .reviews-title {
+        font-size: 2rem;
+      }
+
+      .write-review {
+        padding: 1rem 2rem;
+      }
+
+      .review-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .review-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .reviewer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .reviewer-name {
+        font-weight: 600;
+      }
+
+      .review-date {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .review-rating {
+        display: flex;
+        gap: 0.2rem;
+      }
+
+      .review-title {
+        font-size: 1.2rem;
+        margin-bottom: 1rem;
+      }
+
+      .review-content {
+        color: var(--gray-light);
+        line-height: 1.6;
+        margin-bottom: 1rem;
+      }
+
+      .review-helpful {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .helpful-btn {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .helpful-btn:hover {
+        border-color: var(--white);
+      }
+
+      /* Review Form Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.9);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .rating-input {
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: flex-end;
+        gap: 0.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .rating-input input {
+        display: none;
+      }
+
+      .rating-input label {
+        font-size: 2rem;
+        color: var(--gray-dark);
+        cursor: pointer;
+      }
+
+      .rating-input input:checked ~ label,
+      .rating-input label:hover,
+      .rating-input label:hover ~ label {
+        color: var(--white);
+        text-shadow: 0 0 10px var(--glow-color);
+      }
+
+      @media (max-width: 968px) {
+        .product-container {
+          grid-template-columns: 1fr;
+        }
+
+        .product-viewer {
+          position: static;
+          height: 400px;
+        }
+
+        .product-name {
+          font-size: 2.5rem;
+        }
+
+        .notes-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Product Container -->
+    <div class="product-container">
+      <!-- 3D Viewer -->
+      <div class="product-viewer floating-card">
+        <div class="viewer-container">
+          <canvas id="product-canvas"></canvas>
+        </div>
+        <div class="viewer-controls">
+          <button class="control-btn" onclick="rotateLeft()">←</button>
+          <button class="control-btn" onclick="rotateRight()">→</button>
+          <button class="control-btn" onclick="zoomIn()">+</button>
+          <button class="control-btn" onclick="zoomOut()">-</button>
+          <button class="control-btn" onclick="resetView()">↺</button>
+        </div>
+      </div>
+
+      <!-- Product Info -->
+      <div class="product-info-section">
+        <div class="product-category">Designer Collection</div>
+        <h1 class="product-name glow-text">Midnight Oud</h1>
+
+        <div class="product-rating">
+          <div class="stars">
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star filled">★</span>
+            <span class="star">★</span>
+          </div>
+          <span class="rating-count">(124 reviews)</span>
+        </div>
+
+        <div class="product-price">₦45,000</div>
+
+        <p class="product-description">
+          A mesmerizing blend of rare oud wood and midnight flowers. This
+          captivating fragrance opens with dark berries and saffron, leading to
+          a heart of rose and agarwood, resting on a base of amber and musk.
+          Perfect for evening wear and special occasions.
+        </p>
+
+        <!-- Scent Notes -->
+        <div class="scent-notes">
+          <h3 class="scent-title">Scent Notes</h3>
+          <div class="notes-grid">
+            <div class="note-card">
+              <div class="note-type">Top</div>
+              <div class="note-name">Dark Berries, Saffron</div>
+            </div>
+            <div class="note-card">
+              <div class="note-type">Heart</div>
+              <div class="note-name">Rose, Agarwood</div>
+            </div>
+            <div class="note-card">
+              <div class="note-type">Base</div>
+              <div class="note-name">Amber, Musk</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Size Selection -->
+        <div class="size-selector">
+          <h3 class="size-title">Select Size</h3>
+          <div class="size-options">
+            <div class="size-option selected" onclick="selectSize(this, 45000)">
+              100ml
+              <span class="size-price">₦45,000</span>
+            </div>
+            <div class="size-option" onclick="selectSize(this, 32000)">
+              50ml
+              <span class="size-price">₦32,000</span>
+            </div>
+            <div class="size-option" onclick="selectSize(this, 21000)">
+              30ml
+              <span class="size-price">₦21,000</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quantity -->
+        <div class="quantity-selector">
+          <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+          <input
+            type="number"
+            class="quantity-input"
+            id="quantity"
+            value="1"
+            min="1"
+            max="10"
+            readonly
+          />
+          <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="btn add-to-cart glow" onclick="addToCartFromProduct()">
+            Add to Cart
+          </button>
+          <button
+            class="btn wishlist-btn btn-outline"
+            onclick="toggleWishlist(1)"
+          >
+            ♡ Wishlist
+          </button>
+        </div>
+
+        <!-- Additional Info -->
+        <div
+          style="
+            border-top: 1px solid var(--white-transparent);
+            padding-top: 2rem;
+          "
+        >
+          <div style="display: flex; gap: 2rem; color: var(--gray-light)">
+            <span>⚡ Free delivery on orders above ₦50,000</span>
+            <span>✓ 100% authentic</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Section -->
+      <div class="reviews-section">
+        <div class="reviews-header">
+          <h2 class="reviews-title">Customer Reviews</h2>
+          <button
+            class="btn btn-outline write-review"
+            onclick="openReviewModal()"
+          >
+            Write a Review
+          </button>
+        </div>
+
+        <!-- Reviews List -->
+        <div id="reviews-list">
+          <!-- Review 1 -->
+          <div class="review-card floating-card-light">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <span class="reviewer-name">Sarah Johnson</span>
+                <span class="review-date">2 weeks ago</span>
+              </div>
+              <div class="review-rating">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+              </div>
+            </div>
+            <h4 class="review-title">Absolutely stunning fragrance</h4>
+            <p class="review-content">
+              This is my new signature scent! The oud is prominent but not
+              overwhelming, and it lasts all day. Received so many compliments.
+              Worth every naira!
+            </p>
+            <div class="review-helpful">
+              <button class="helpful-btn" onclick="markHelpful(this)">
+                <span>👍</span> Helpful (24)
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 2 -->
+          <div class="review-card floating-card-light">
+            <div class="review-header">
+              <div class="reviewer-info">
+                <span class="reviewer-name">Michael Obi</span>
+                <span class="review-date">1 month ago</span>
+              </div>
+              <div class="review-rating">
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star filled">★</span>
+                <span class="star">★</span>
+              </div>
+            </div>
+            <h4 class="review-title">Great but pricey</h4>
+            <p class="review-content">
+              Beautiful scent, very masculine and sophisticated. The 100ml is
+              expensive but a little goes a long way. Will definitely buy again.
+            </p>
+            <div class="review-helpful">
+              <button class="helpful-btn" onclick="markHelpful(this)">
+                <span>👍</span> Helpful (12)
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Load More -->
+        <div style="text-align: right; margin-top: 2rem">
+          <button class="btn btn-outline">Load More Reviews</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Review Modal -->
+    <div class="modal" id="review-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Write a Review</h2>
+          <button class="modal-close" onclick="closeReviewModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="review-form" onsubmit="submitReview(event)">
+          <!-- Rating -->
+          <div class="rating-input">
+            <input type="radio" name="rating" id="star5" value="5" />
+            <label for="star5">★</label>
+            <input type="radio" name="rating" id="star4" value="4" />
+            <label for="star4">★</label>
+            <input type="radio" name="rating" id="star3" value="3" />
+            <label for="star3">★</label>
+            <input type="radio" name="rating" id="star2" value="2" />
+            <label for="star2">★</label>
+            <input type="radio" name="rating" id="star1" value="1" />
+            <label for="star1">★</label>
+          </div>
+
+          <!-- Review Title -->
+          <div class="form-group">
+            <label class="form-label">Review Title</label>
+            <input
+              type="text"
+              class="form-input"
+              id="review-title"
+              placeholder="Summarize your experience"
+              required
+            />
+          </div>
+
+          <!-- Review Content -->
+          <div class="form-group">
+            <label class="form-label">Your Review</label>
+            <textarea
+              class="form-input"
+              id="review-content"
+              rows="4"
+              placeholder="What did you think about this product?"
+              required
+            ></textarea>
+          </div>
+
+          <!-- Photos -->
+          <div class="form-group">
+            <label class="form-label">Add Photos (optional)</label>
+            <input
+              type="file"
+              class="form-input"
+              id="review-photos"
+              accept="image/*"
+              multiple
+            />
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Submit Review
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/3d.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+      // Product page variables
+      let currentPrice = 45000;
+      let selectedSize = "100ml";
+      let currentQuantity = 1;
+
+      // Initialize product page
+      document.addEventListener("DOMContentLoaded", function () {
+        // Initialize 3D viewer
+        if (typeof initProductViewer === "function") {
+          initProductViewer("product-canvas", 1);
+        }
+
+        updateCartCount();
+      });
+
+      // Size selection
+      function selectSize(element, price) {
+        // Remove selected class from all
+        document.querySelectorAll(".size-option").forEach((opt) => {
+          opt.classList.remove("selected");
+        });
+
+        // Add selected class to clicked
+        element.classList.add("selected");
+
+        // Update current price
+        currentPrice = price;
+        selectedSize = element.innerText.trim().split("\n")[0];
+
+        // Update displayed price
+        document.querySelector(".product-price").textContent =
+          `₦${currentPrice.toLocaleString()}`;
+      }
+
+      // Quantity update
+      function updateQuantity(change) {
+        const quantityInput = document.getElementById("quantity");
+        let newValue = parseInt(quantityInput.value) + change;
+
+        if (newValue >= 1 && newValue <= 10) {
+          quantityInput.value = newValue;
+          currentQuantity = newValue;
+        }
+      }
+
+      // Add to cart from product page
+      function addToCartFromProduct() {
+        const product = {
+          id: 1,
+          name: "Midnight Oud",
+          price: currentPrice,
+          image:
+            "https://via.placeholder.com/300x400/000000/ffffff?text=Midnight+Oud",
+        };
+
+        addToCart(product, selectedSize, currentQuantity);
+      }
+
+      // 3D controls (to be implemented)
+      function rotateLeft() {
+        console.log("Rotate left");
+      }
+
+      function rotateRight() {
+        console.log("Rotate right");
+      }
+
+      function zoomIn() {
+        console.log("Zoom in");
+      }
+
+      function zoomOut() {
+        console.log("Zoom out");
+      }
+
+      function resetView() {
+        console.log("Reset view");
+      }
+
+      // Review functions
+      function openReviewModal() {
+        if (!Scentbysally.isAuthenticated) {
+          showNotification("Please login to write a review", "error");
+          window.location.href = "../login.html";
+          return;
+        }
+        document.getElementById("review-modal").classList.add("active");
+      }
+
+      function closeReviewModal() {
+        document.getElementById("review-modal").classList.remove("active");
+      }
+
+      function submitReview(event) {
+        event.preventDefault();
+
+        const rating = document.querySelector(
+          'input[name="rating"]:checked',
+        )?.value;
+        const title = document.getElementById("review-title").value;
+        const content = document.getElementById("review-content").value;
+
+        if (!rating) {
+          showNotification("Please select a rating", "error");
+          return;
+        }
+
+        // Here you would send to backend
+        console.log("Review submitted:", { rating, title, content });
+
+        showNotification("Thank you for your review!", "success");
+        closeReviewModal();
+
+        // Reset form
+        event.target.reset();
+      }
+
+      function markHelpful(btn) {
+        const countSpan = btn.querySelector("span:last-child");
+        let count = parseInt(countSpan.textContent.match(/\d+/)[0]);
+        count++;
+        countSpan.textContent = `Helpful (${count})`;
+        btn.disabled = true;
+        btn.style.opacity = "0.5";
+      }
+    </script>
+  </body>
+</html>

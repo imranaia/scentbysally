@@ -1,0 +1,405 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Login</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 56rem;
+      }
+
+      .auth-container {
+        min-height: calc(100vh - 200px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+      }
+
+      .auth-box {
+        width: 100%;
+        max-width: 450px;
+        animation: fadeIn 0.5s ease;
+      }
+
+      .auth-tabs {
+        display: flex;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .auth-tab {
+        flex: 1;
+        padding: 1rem;
+        text-align: center;
+        color: var(--gray-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .auth-tab:hover {
+        color: var(--white);
+      }
+
+      .auth-tab.active {
+        color: var(--white);
+      }
+
+      .auth-tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 1px;
+        background: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .auth-form {
+        display: none;
+        animation: slideIn 0.3s ease;
+      }
+
+      .auth-form.active {
+        display: block;
+      }
+
+      .auth-footer {
+        text-align: center;
+        margin-top: 1.5rem;
+        color: var(--gray-light);
+      }
+
+      .auth-footer a {
+        color: var(--white);
+        text-decoration: none;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .auth-footer a:hover {
+        border-bottom-color: var(--white);
+      }
+
+      .forgot-password {
+        text-align: right;
+        margin-top: 0.5rem;
+      }
+
+      .forgot-password a {
+        color: var(--gray-light);
+        text-decoration: none;
+        font-size: 0.9rem;
+      }
+
+      .forgot-password a:hover {
+        color: var(--white);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation (simplified for auth pages) -->
+    <nav class="navbar">
+      <img src="assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="index.html" class="nav-link">Back</a>
+      </div>
+    </nav>
+
+    <!-- Auth Container -->
+    <div class="auth-container">
+      <div class="auth-box floating-card">
+        <!-- Tabs -->
+        <div class="auth-tabs">
+          <div class="auth-tab active" onclick="showLoginForm()">Login</div>
+          <div class="auth-tab" onclick="showRegisterForm()">Register</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form-container" class="auth-form active">
+          <form id="login-form">
+            <h2 style="text-align: center; margin-bottom: 2rem">
+              Welcome Back
+            </h2>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-input"
+                id="email"
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-input"
+                id="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div class="forgot-password">
+              <a href="#" onclick="showResetForm()">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%">Login</button>
+          </form>
+        </div>
+
+        <!-- Register Form -->
+        <div id="register-form-container" class="auth-form">
+          <form id="register-form">
+            <h2 style="text-align: center; margin-bottom: 2rem">
+              Create Account
+            </h2>
+
+            <div class="form-group">
+              <label class="form-label">Full Name</label>
+              <input
+                type="text"
+                class="form-input"
+                id="name"
+                placeholder="Sally"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-input"
+                id="email"
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input
+                type="tel"
+                class="form-input"
+                id="phone"
+                placeholder="09169701140"
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-input"
+                id="password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                class="form-input"
+                id="confirm-password"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%">
+              Register
+            </button>
+          </form>
+        </div>
+
+        <!-- Reset Password Form (hidden by default) -->
+        <div id="reset-form-container" class="auth-form">
+          <form id="reset-form">
+            <h2 style="text-align: center; margin-bottom: 2rem">
+              Reset Password
+            </h2>
+
+            <p
+              style="
+                color: var(--gray-light);
+                text-align: center;
+                margin-bottom: 2rem;
+              "
+            >
+              Enter your email address and we'll send you a link to reset your
+              password.
+            </p>
+
+            <div class="form-group">
+              <label class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-input"
+                id="reset-email"
+                placeholder="your@email.com"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn" style="width: 100%">
+              Send Reset Link
+            </button>
+
+            <div class="auth-footer">
+              <a href="#" onclick="showLoginForm()">Back to Login</a>
+            </div>
+          </form>
+        </div>
+
+        <!-- Footer for login/register -->
+        <div id="auth-footer-login" class="auth-footer">
+          Don't have an account?
+          <a href="#" onclick="showRegisterForm()">Register</a>
+        </div>
+        <div
+          id="auth-footer-register"
+          class="auth-footer"
+          style="display: none"
+        >
+          Already have an account?
+          <a href="#" onclick="showLoginForm()">Login</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Simple Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+    <script>
+      // Tab switching functions
+      function showLoginForm() {
+        // Update tabs
+        document.querySelectorAll(".auth-tab").forEach((tab, index) => {
+          if (index === 0) tab.classList.add("active");
+          else tab.classList.remove("active");
+        });
+
+        // Show login form
+        document.getElementById("login-form-container").classList.add("active");
+        document
+          .getElementById("register-form-container")
+          .classList.remove("active");
+        document
+          .getElementById("reset-form-container")
+          .classList.remove("active");
+
+        // Show correct footer
+        document.getElementById("auth-footer-login").style.display = "block";
+        document.getElementById("auth-footer-register").style.display = "none";
+      }
+
+      function showRegisterForm() {
+        // Update tabs
+        document.querySelectorAll(".auth-tab").forEach((tab, index) => {
+          if (index === 1) tab.classList.add("active");
+          else tab.classList.remove("active");
+        });
+
+        // Show register form
+        document
+          .getElementById("register-form-container")
+          .classList.add("active");
+        document
+          .getElementById("login-form-container")
+          .classList.remove("active");
+        document
+          .getElementById("reset-form-container")
+          .classList.remove("active");
+
+        // Show correct footer
+        document.getElementById("auth-footer-register").style.display = "block";
+        document.getElementById("auth-footer-login").style.display = "none";
+      }
+
+      function showResetForm() {
+        // Hide tabs
+        document.querySelectorAll(".auth-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        // Show reset form
+        document.getElementById("reset-form-container").classList.add("active");
+        document
+          .getElementById("login-form-container")
+          .classList.remove("active");
+        document
+          .getElementById("register-form-container")
+          .classList.remove("active");
+
+        // Hide footer
+        document.getElementById("auth-footer-login").style.display = "none";
+        document.getElementById("auth-footer-register").style.display = "none";
+      }
+
+      // Override form handlers to use our functions
+      document.addEventListener("DOMContentLoaded", function () {
+        // Re-attach form handlers after our main.js initializes
+        setTimeout(() => {
+          const loginForm = document.getElementById("login-form");
+          if (loginForm) {
+            loginForm.removeEventListener("submit", handleLogin);
+            loginForm.addEventListener("submit", handleLogin);
+          }
+
+          const registerForm = document.getElementById("register-form");
+          if (registerForm) {
+            registerForm.removeEventListener("submit", handleRegister);
+            registerForm.addEventListener("submit", handleRegister);
+          }
+
+          const resetForm = document.getElementById("reset-form");
+          if (resetForm) {
+            resetForm.removeEventListener("submit", handleResetPassword);
+            resetForm.addEventListener("submit", handleResetPassword);
+          }
+        }, 100);
+      });
+    </script>
+  </body>
+</html>

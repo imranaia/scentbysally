@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Admin Dashboard</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .welcome-section {
+        background: linear-gradient(145deg, var(--black-lighter), var(--black));
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        animation: float 6s ease-in-out infinite;
+      }
+
+      .permission-badge {
+        display: inline-block;
+        padding: 0.2rem 1rem;
+        background: var(--gray-dark);
+        border-radius: 20px;
+        font-size: 0.7rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .task-list {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .task-item {
+        display: flex;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .task-item:last-child {
+        border-bottom: none;
+      }
+
+      .task-check {
+        margin-right: 1rem;
+        width: 20px;
+        height: 20px;
+        accent-color: var(--white);
+      }
+
+      .task-content {
+        flex: 1;
+      }
+
+      .task-title {
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .task-meta {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .task-priority {
+        padding: 0.2rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .priority-high {
+        background: #f4433620;
+        color: #f44336;
+        border: 1px solid #f44336;
+      }
+
+      .priority-medium {
+        background: #ffa50020;
+        color: #ffa500;
+        border: 1px solid #ffa500;
+      }
+
+      .priority-low {
+        background: #4caf5020;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../buyer/products.html" class="nav-link">Shop</a>
+        <a href="dashboard.html" class="nav-link active">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👤</div>
+          <div class="admin-name">John Smith</div>
+          <div class="admin-role">Mini-Admin</div>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <h4 style="margin-bottom: 0.5rem">Your Permissions:</h4>
+          <span class="permission-badge">Inventory</span>
+          <span class="permission-badge">Orders</span>
+          <span class="permission-badge">Customers</span>
+          <span class="permission-badge">Boxes</span>
+          <span class="permission-badge">Custom Orders</span>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link active"
+              >Dashboard</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="orders.html" class="admin-menu-link">Orders</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="customers.html" class="admin-menu-link">Customers</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+          <div class="welcome-content">
+            <h2 class="welcome-greeting">Welcome back,</h2>
+            <h1 class="welcome-name">John!</h1>
+            <div class="welcome-stats">
+              <div class="stat-item">
+                <div class="stat-value">8</div>
+                <div class="stat-label">Tasks Due</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">3</div>
+                <div class="stat-label">Pending Orders</div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">2</div>
+                <div class="stat-label">Low Stock Alerts</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Orders Today</div>
+            <div class="stat-value">12</div>
+            <div style="color: var(--gray-light)">₦345,000 value</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Pending Orders</div>
+            <div class="stat-value">3</div>
+            <div style="color: #ffa500">Need processing</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Low Stock Items</div>
+            <div class="stat-value">2</div>
+            <div style="color: #f44336">Restock soon</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Custom Requests</div>
+            <div class="stat-value">4</div>
+            <div style="color: #4caf50">2 need pricing</div>
+          </div>
+        </div>
+
+        <!-- Today's Tasks -->
+        <div class="task-list">
+          <h3 style="margin-bottom: 1rem">Today's Priority Tasks</h3>
+
+          <div class="task-item">
+            <input type="checkbox" class="task-check" />
+            <div class="task-content">
+              <div class="task-title">Process 3 pending orders</div>
+              <div class="task-meta">Due today • 2 urgent</div>
+            </div>
+            <span class="task-priority priority-high">High</span>
+          </div>
+
+          <div class="task-item">
+            <input type="checkbox" class="task-check" />
+            <div class="task-content">
+              <div class="task-title">Update stock for low inventory items</div>
+              <div class="task-meta">
+                2 items below threshold • Rose Noir, Woody Elegance
+              </div>
+            </div>
+            <span class="task-priority priority-high">High</span>
+          </div>
+
+          <div class="task-item">
+            <input type="checkbox" class="task-check" />
+            <div class="task-content">
+              <div class="task-title">Price custom box requests</div>
+              <div class="task-meta">2 requests awaiting pricing</div>
+            </div>
+            <span class="task-priority priority-medium">Medium</span>
+          </div>
+
+          <div class="task-item">
+            <input type="checkbox" class="task-check" />
+            <div class="task-content">
+              <div class="task-title">Respond to customer messages</div>
+              <div class="task-meta">3 unread messages</div>
+            </div>
+            <span class="task-priority priority-medium">Medium</span>
+          </div>
+
+          <div class="task-item">
+            <input type="checkbox" class="task-check" />
+            <div class="task-content">
+              <div class="task-title">Create new box bundle</div>
+              <div class="task-meta">Weekly special request</div>
+            </div>
+            <span class="task-priority priority-low">Low</span>
+          </div>
+        </div>
+
+        <!-- Recent Activity -->
+        <div style="margin-top: 2rem">
+          <h3 style="margin-bottom: 1rem">Recent Activity</h3>
+          <table style="width: 100%">
+            <tbody>
+              <tr>
+                <td style="padding: 0.5rem">🕐 10:30 AM</td>
+                <td>Updated inventory for Midnight Oud</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem">🕐 09:15 AM</td>
+                <td>Processed order #SC-2024-008</td>
+              </tr>
+              <tr>
+                <td style="padding: 0.5rem">🕐 Yesterday</td>
+                <td>Created 3-piece box "Spring Collection"</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 Scentbysally. All rights reserved. | Contact: 09169701140
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is authenticated and is admin (not superadmin)
+        if (
+          !Scentbysally.isAuthenticated ||
+          (Scentbysally.userRole !== "admin" &&
+            Scentbysally.userRole !== "superadmin")
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+    </script>
+  </body>
+</html>

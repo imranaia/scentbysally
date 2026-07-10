@@ -1,0 +1,979 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - My Profile</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .profile-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 2rem 5%;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .profile-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 5%;
+      }
+
+      .profile-grid {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+      }
+
+      /* Sidebar */
+      .profile-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: var(--white);
+        box-shadow: 0 0 30px var(--glow-color);
+      }
+
+      .profile-name {
+        text-align: center;
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .profile-email {
+        text-align: center;
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        margin-bottom: 2rem;
+      }
+
+      .profile-menu {
+        list-style: none;
+      }
+
+      .profile-menu-item {
+        margin-bottom: 0.5rem;
+      }
+
+      .profile-menu-link {
+        display: block;
+        padding: 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .profile-menu-link:hover,
+      .profile-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .profile-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      /* Profile Info Form */
+      .profile-form {
+        max-width: 600px;
+      }
+
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+      }
+
+      /* Addresses */
+      .addresses-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .address-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .address-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        position: relative;
+      }
+
+      .address-card.default {
+        border-color: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .default-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.7rem;
+        color: var(--gray-light);
+        text-transform: uppercase;
+      }
+
+      .address-type {
+        font-weight: 600;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .address-details {
+        color: var(--gray-light);
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+      }
+
+      .address-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .address-btn {
+        flex: 1;
+        padding: 0.5rem;
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        cursor: pointer;
+        font-size: 0.9rem;
+      }
+
+      .address-btn:hover {
+        border-color: var(--white);
+      }
+
+      /* Address Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+        line-height: 1;
+      }
+
+      .modal-close:hover {
+        opacity: 0.8;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      /* Orders */
+      .order-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .order-number {
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      .order-status {
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+      }
+
+      .status-pending {
+        background: var(--gray-dark);
+      }
+      .status-processing {
+        background: var(--gray);
+      }
+      .status-shipped {
+        background: var(--white);
+        color: var(--black);
+      }
+      .status-delivered {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .order-details {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin-bottom: 1rem;
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .order-items {
+        border-top: 1px solid var(--white-transparent);
+        padding-top: 1rem;
+        margin-top: 1rem;
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+      }
+
+      /* Wishlist */
+      .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .wishlist-item {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 12px;
+        overflow: hidden;
+        text-align: center;
+      }
+
+      .wishlist-image {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+      }
+
+      .wishlist-info {
+        padding: 1rem;
+      }
+
+      .wishlist-name {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .wishlist-price {
+        color: var(--white);
+        margin-bottom: 1rem;
+      }
+
+      .wishlist-remove {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        width: 100%;
+      }
+
+      .wishlist-remove:hover {
+        border-color: var(--white);
+      }
+
+      /* Tabs */
+      .profile-tab {
+        display: none;
+      }
+
+      .profile-tab.active {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .profile-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .profile-sidebar {
+          position: static;
+        }
+
+        .form-row {
+          grid-template-columns: 1fr;
+        }
+
+        .order-details {
+          grid-template-columns: 1fr;
+          gap: 0.5rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Profile Header with Welcome Section -->
+    <div class="profile-header">
+      <div
+        class="welcome-section"
+        style="margin: 0; max-width: 1200px; margin: 0 auto"
+      >
+        <div class="welcome-content">
+          <h2 class="welcome-greeting">Welcome back,</h2>
+          <h1 class="welcome-name" id="welcome-name">Sally</h1>
+          <div class="welcome-stats">
+            <div class="stat-item">
+              <div class="stat-value" id="order-count">12</div>
+              <div class="stat-label">Orders</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="wishlist-count">5</div>
+              <div class="stat-label">Wishlist</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="address-count">2</div>
+              <div class="stat-label">Addresses</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+      <div class="profile-grid">
+        <!-- Sidebar -->
+        <aside class="profile-sidebar floating-card">
+          <div class="profile-avatar">👤</div>
+          <h2 class="profile-name" id="sidebar-name">Sally</h2>
+          <p class="profile-email" id="sidebar-email">sally@scentbysally.com</p>
+
+          <ul class="profile-menu">
+            <li class="profile-menu-item">
+              <a
+                href="#"
+                class="profile-menu-link active"
+                onclick="switchTab('info', event)"
+                >Profile Information</a
+              >
+            </li>
+            <li class="profile-menu-item">
+              <a
+                href="#"
+                class="profile-menu-link"
+                onclick="switchTab('addresses', event)"
+                >My Addresses</a
+              >
+            </li>
+            <li class="profile-menu-item">
+              <a
+                href="#"
+                class="profile-menu-link"
+                onclick="switchTab('orders', event)"
+                >Order History</a
+              >
+            </li>
+            <li class="profile-menu-item">
+              <a
+                href="#"
+                class="profile-menu-link"
+                onclick="switchTab('wishlist', event)"
+                >Wishlist</a
+              >
+            </li>
+            <li class="profile-menu-item">
+              <a
+                href="#"
+                class="profile-menu-link"
+                onclick="switchTab('security', event)"
+                >Security</a
+              >
+            </li>
+          </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="profile-content floating-card">
+          <!-- Profile Info Tab -->
+          <div id="tab-info" class="profile-tab active">
+            <h2 class="content-title">Profile Information</h2>
+
+            <form class="profile-form" onsubmit="updateProfile(event)">
+              <div class="form-row">
+                <div class="form-group">
+                  <label class="form-label">First Name</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="first-name"
+                    value="Sally"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Last Name</label>
+                  <input
+                    type="text"
+                    class="form-input"
+                    id="last-name"
+                    value="Obi"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input
+                  type="email"
+                  class="form-input"
+                  id="email"
+                  value="sally@scentbysally.com"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Phone Number</label>
+                <input
+                  type="tel"
+                  class="form-input"
+                  id="phone"
+                  value="09169701140"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Date of Birth</label>
+                <input
+                  type="date"
+                  class="form-input"
+                  id="dob"
+                  value="1990-01-01"
+                />
+              </div>
+
+              <button type="submit" class="btn">Save Changes</button>
+            </form>
+          </div>
+
+          <!-- Addresses Tab -->
+          <div id="tab-addresses" class="profile-tab">
+            <div class="addresses-header">
+              <h2 class="content-title">My Addresses</h2>
+              <button class="btn btn-outline" onclick="openAddressModal()">
+                + Add New
+              </button>
+            </div>
+
+            <div class="address-grid" id="addresses-grid">
+              <!-- Address 1 -->
+              <div class="address-card default">
+                <div class="default-badge">DEFAULT</div>
+                <div class="address-type">Home</div>
+                <div class="address-details">
+                  <strong>Sally Obi</strong><br />
+                  09169701140<br />
+                  123 Main Street, Ikeja<br />
+                  Lagos, Lagos
+                </div>
+                <div class="address-actions">
+                  <button class="address-btn" onclick="editAddress(1)">
+                    Edit
+                  </button>
+                  <button class="address-btn" onclick="deleteAddress(1)">
+                    Delete
+                  </button>
+                </div>
+              </div>
+
+              <!-- Address 2 -->
+              <div class="address-card">
+                <div class="address-type">Work</div>
+                <div class="address-details">
+                  <strong>Sally Obi</strong><br />
+                  09169701140<br />
+                  456 Business Avenue, VI<br />
+                  Lagos, Lagos
+                </div>
+                <div class="address-actions">
+                  <button class="address-btn" onclick="editAddress(2)">
+                    Edit
+                  </button>
+                  <button class="address-btn" onclick="deleteAddress(2)">
+                    Delete
+                  </button>
+                  <button class="address-btn" onclick="setDefaultAddress(2)">
+                    Set Default
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Orders Tab -->
+          <div id="tab-orders" class="profile-tab">
+            <h2 class="content-title">Order History</h2>
+
+            <div id="orders-list">
+              <!-- Order 1 -->
+              <div class="order-card">
+                <div class="order-header">
+                  <span class="order-number">#SC-2024-001</span>
+                  <span class="order-status status-delivered">Delivered</span>
+                </div>
+                <div class="order-details">
+                  <span>Date: Jan 15, 2024</span>
+                  <span>Total: ₦97,500</span>
+                  <span>Items: 3</span>
+                </div>
+                <div class="order-items">
+                  <div class="order-item">
+                    <span>Midnight Oud (100ml) × 1</span>
+                    <span>₦45,000</span>
+                  </div>
+                  <div class="order-item">
+                    <span>Rose Noir (30ml) × 2</span>
+                    <span>₦76,000</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Order 2 -->
+              <div class="order-card">
+                <div class="order-header">
+                  <span class="order-number">#SC-2024-002</span>
+                  <span class="order-status status-shipped">Shipped</span>
+                </div>
+                <div class="order-details">
+                  <span>Date: Feb 03, 2024</span>
+                  <span>Total: ₦52,000</span>
+                  <span>Items: 1</span>
+                </div>
+                <div class="order-items">
+                  <div class="order-item">
+                    <span>Amber Mystique (100ml) × 1</span>
+                    <span>₦52,000</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Wishlist Tab -->
+          <div id="tab-wishlist" class="profile-tab">
+            <h2 class="content-title">My Wishlist</h2>
+
+            <div class="wishlist-grid">
+              <!-- Item 1 -->
+              <div class="wishlist-item">
+                <img
+                  src="https://via.placeholder.com/200x200/000000/ffffff?text=Midnight+Oud"
+                  alt="Midnight Oud"
+                  class="wishlist-image"
+                />
+                <div class="wishlist-info">
+                  <h3 class="wishlist-name">Midnight Oud</h3>
+                  <p class="wishlist-price">₦45,000</p>
+                  <button
+                    class="wishlist-remove"
+                    onclick="removeFromWishlist(1)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+
+              <!-- Item 2 -->
+              <div class="wishlist-item">
+                <img
+                  src="https://via.placeholder.com/200x200/000000/ffffff?text=Woody+Elegance"
+                  alt="Woody Elegance"
+                  class="wishlist-image"
+                />
+                <div class="wishlist-info">
+                  <h3 class="wishlist-name">Woody Elegance</h3>
+                  <p class="wishlist-price">₦48,000</p>
+                  <button
+                    class="wishlist-remove"
+                    onclick="removeFromWishlist(2)"
+                  >
+                    Remove
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Security Tab -->
+          <div id="tab-security" class="profile-tab">
+            <h2 class="content-title">Security Settings</h2>
+
+            <form onsubmit="changePassword(event)">
+              <div class="form-group">
+                <label class="form-label">Current Password</label>
+                <input
+                  type="password"
+                  class="form-input"
+                  id="current-password"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input
+                  type="password"
+                  class="form-input"
+                  id="new-password"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input
+                  type="password"
+                  class="form-input"
+                  id="confirm-password"
+                  required
+                />
+              </div>
+
+              <button type="submit" class="btn">Update Password</button>
+            </form>
+          </div>
+        </main>
+      </div>
+    </div>
+
+    <!-- Address Modal (Styled like checkout) -->
+    <div class="modal" id="address-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add New Address</h2>
+          <button class="modal-close" onclick="closeAddressModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="address-form" onsubmit="saveAddress(event)">
+          <div class="form-group">
+            <label class="form-label">Address Type</label>
+            <select class="form-input" id="address-type" required>
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="full-name"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input
+              type="tel"
+              class="form-input"
+              id="phone"
+              placeholder="09169701140"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input
+              type="text"
+              class="form-input"
+              id="street"
+              placeholder="123 Main Street"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input
+              type="text"
+              class="form-input"
+              id="city"
+              placeholder="Lagos"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <select class="form-input" id="state" required>
+              <option value="Lagos">Lagos</option>
+              <option value="Abuja">Abuja</option>
+              <option value="Rivers">Rivers</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="set-default" />
+            <label for="set-default">Set as default address</label>
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Save Address
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize profile
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+
+        // Check if user is authenticated
+        if (!Scentbysally.isAuthenticated) {
+          window.location.href = "../login.html";
+          return;
+        }
+
+        // Update welcome section with user data
+        if (Scentbysally.user) {
+          document.getElementById("welcome-name").textContent =
+            Scentbysally.user.name || "Sally";
+          document.getElementById("sidebar-name").textContent =
+            Scentbysally.user.name || "Sally";
+          document.getElementById("sidebar-email").textContent =
+            Scentbysally.user.email || "sally@scentbysally.com";
+        }
+      });
+
+      // Tab switching
+      function switchTab(tabName, event) {
+        event.preventDefault();
+
+        // Update menu links
+        document.querySelectorAll(".profile-menu-link").forEach((link) => {
+          link.classList.remove("active");
+        });
+        event.currentTarget.classList.add("active");
+
+        // Show selected tab
+        document.querySelectorAll(".profile-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        document.getElementById(`tab-${tabName}`).classList.add("active");
+      }
+
+      // Update profile
+      function updateProfile(event) {
+        event.preventDefault();
+
+        const firstName = document.getElementById("first-name").value;
+        const lastName = document.getElementById("last-name").value;
+        const email = document.getElementById("email").value;
+        const phone = document.getElementById("phone").value;
+
+        console.log("Updating profile:", { firstName, lastName, email, phone });
+        showNotification("Profile updated successfully", "success");
+      }
+
+      // Address functions
+      function openAddressModal() {
+        document.getElementById("address-modal").classList.add("active");
+      }
+
+      function closeAddressModal() {
+        document.getElementById("address-modal").classList.remove("active");
+      }
+
+      function saveAddress(event) {
+        event.preventDefault();
+
+        const address = {
+          type: document.getElementById("address-type").value,
+          name: document.getElementById("full-name").value,
+          phone: document.getElementById("phone").value,
+          street: document.getElementById("street").value,
+          city: document.getElementById("city").value,
+          state: document.getElementById("state").value,
+          isDefault: document.getElementById("set-default").checked,
+        };
+
+        console.log("Saving address:", address);
+        showNotification("Address saved successfully", "success");
+        closeAddressModal();
+
+        // In real app, would add to grid
+      }
+
+      function editAddress(id) {
+        console.log("Editing address:", id);
+        openAddressModal();
+      }
+
+      function deleteAddress(id) {
+        if (confirm("Are you sure you want to delete this address?")) {
+          console.log("Deleting address:", id);
+          showNotification("Address deleted", "success");
+        }
+      }
+
+      function setDefaultAddress(id) {
+        console.log("Setting default address:", id);
+        showNotification("Default address updated", "success");
+      }
+
+      // Wishlist
+      function removeFromWishlist(id) {
+        console.log("Removing from wishlist:", id);
+        showNotification("Removed from wishlist", "success");
+      }
+
+      // Change password
+      function changePassword(event) {
+        event.preventDefault();
+
+        const current = document.getElementById("current-password").value;
+        const newPass = document.getElementById("new-password").value;
+        const confirm = document.getElementById("confirm-password").value;
+
+        if (newPass !== confirm) {
+          showNotification("New passwords do not match", "error");
+          return;
+        }
+
+        console.log("Changing password");
+        showNotification("Password updated successfully", "success");
+
+        // Reset form
+        event.target.reset();
+      }
+    </script>
+  </body>
+</html>

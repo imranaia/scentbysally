@@ -1,0 +1,592 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - My Orders</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .orders-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 3rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .orders-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .orders-container {
+        max-width: 1000px;
+        margin: 3rem auto;
+        padding: 0 5%;
+      }
+
+      .order-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 0.5rem 1.5rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--gray-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .filter-btn:hover,
+      .filter-btn.active {
+        border-color: var(--white);
+        color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .order-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .order-card:hover {
+        transform: translateX(5px);
+        box-shadow: -5px 0 20px var(--glow-color);
+      }
+
+      .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .order-number {
+        font-size: 1.2rem;
+        font-weight: 600;
+      }
+
+      .order-status {
+        padding: 0.4rem 1.2rem;
+        border-radius: 25px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .status-pending {
+        background: var(--gray-dark);
+        color: var(--gray-light);
+      }
+      .status-processing {
+        background: var(--gray);
+        color: var(--white);
+      }
+      .status-shipped {
+        background: var(--white);
+        color: var(--black);
+      }
+      .status-delivered {
+        background: var(--white);
+        color: var(--black);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+      .status-cancelled {
+        background: var(--black-light);
+        color: var(--gray-light);
+        text-decoration: line-through;
+      }
+
+      .order-info-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .info-item {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .info-label {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.3rem;
+      }
+
+      .info-value {
+        font-size: 1.1rem;
+        font-weight: 600;
+      }
+
+      .order-items {
+        background: var(--black);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+      }
+
+      .order-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .order-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-details {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .item-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .item-name {
+        font-weight: 600;
+      }
+
+      .item-meta {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .item-price {
+        font-weight: 600;
+      }
+
+      .order-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+      }
+
+      .order-total {
+        font-size: 1.3rem;
+        font-weight: 700;
+      }
+
+      .order-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .action-btn {
+        padding: 0.5rem 1.5rem;
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .action-btn:hover {
+        border-color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .empty-orders {
+        text-align: center;
+        padding: 4rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      @media (max-width: 768px) {
+        .order-info-grid {
+          grid-template-columns: 1fr;
+          gap: 0.8rem;
+        }
+
+        .order-footer {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .order-actions {
+          width: 100%;
+        }
+
+        .action-btn {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Orders Header -->
+    <div class="orders-header">
+      <h1 class="orders-title glow-text">My Orders</h1>
+      <p style="color: var(--gray-light)">Track and manage your purchases</p>
+    </div>
+
+    <!-- Orders Container -->
+    <div class="orders-container">
+      <!-- Filter Buttons -->
+      <div class="order-filters">
+        <button class="filter-btn active" onclick="filterOrders('all')">
+          All Orders
+        </button>
+        <button class="filter-btn" onclick="filterOrders('pending')">
+          Pending
+        </button>
+        <button class="filter-btn" onclick="filterOrders('processing')">
+          Processing
+        </button>
+        <button class="filter-btn" onclick="filterOrders('shipped')">
+          Shipped
+        </button>
+        <button class="filter-btn" onclick="filterOrders('delivered')">
+          Delivered
+        </button>
+      </div>
+
+      <!-- Orders List -->
+      <div id="orders-list">
+        <!-- Order 1 -->
+        <div class="order-card floating-card" data-status="delivered">
+          <div class="order-header">
+            <span class="order-number">#SC-2024-001</span>
+            <span class="order-status status-delivered">Delivered</span>
+          </div>
+
+          <div class="order-info-grid">
+            <div class="info-item">
+              <span class="info-label">Order Date</span>
+              <span class="info-value">January 15, 2024</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Delivery Date</span>
+              <span class="info-value">January 20, 2024</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Payment Method</span>
+              <span class="info-value">Paystack (Card)</span>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div class="order-item">
+              <div class="item-details">
+                <img
+                  src="https://via.placeholder.com/50x50/000000/ffffff?text=MO"
+                  class="item-image"
+                />
+                <div>
+                  <div class="item-name">Midnight Oud</div>
+                  <div class="item-meta">100ml × 1</div>
+                </div>
+              </div>
+              <div class="item-price">₦45,000</div>
+            </div>
+            <div class="order-item">
+              <div class="item-details">
+                <img
+                  src="https://via.placeholder.com/50x50/000000/ffffff?text=RN"
+                  class="item-image"
+                />
+                <div>
+                  <div class="item-name">Rose Noir</div>
+                  <div class="item-meta">30ml × 2</div>
+                </div>
+              </div>
+              <div class="item-price">₦76,000</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <div class="order-total">Total: ₦121,000</div>
+            <div class="order-actions">
+              <button
+                class="action-btn"
+                onclick="viewOrderDetails('SC-2024-001')"
+              >
+                View Details
+              </button>
+              <button class="action-btn" onclick="reorder('SC-2024-001')">
+                Reorder
+              </button>
+              <button class="action-btn" onclick="writeReview('SC-2024-001')">
+                Write Review
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order 2 -->
+        <div class="order-card floating-card" data-status="shipped">
+          <div class="order-header">
+            <span class="order-number">#SC-2024-002</span>
+            <span class="order-status status-shipped">Shipped</span>
+          </div>
+
+          <div class="order-info-grid">
+            <div class="info-item">
+              <span class="info-label">Order Date</span>
+              <span class="info-value">February 3, 2024</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Estimated Delivery</span>
+              <span class="info-value">February 8, 2024</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Payment Method</span>
+              <span class="info-value">Paystack (Transfer)</span>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div class="order-item">
+              <div class="item-details">
+                <img
+                  src="https://via.placeholder.com/50x50/000000/ffffff?text=AM"
+                  class="item-image"
+                />
+                <div>
+                  <div class="item-name">Amber Mystique</div>
+                  <div class="item-meta">100ml × 1</div>
+                </div>
+              </div>
+              <div class="item-price">₦52,000</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <div class="order-total">Total: ₦52,000</div>
+            <div class="order-actions">
+              <button class="action-btn" onclick="trackOrder('SC-2024-002')">
+                Track Order
+              </button>
+              <button
+                class="action-btn"
+                onclick="viewOrderDetails('SC-2024-002')"
+              >
+                View Details
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Order 3 -->
+        <div class="order-card floating-card" data-status="processing">
+          <div class="order-header">
+            <span class="order-number">#SC-2024-003</span>
+            <span class="order-status status-processing">Processing</span>
+          </div>
+
+          <div class="order-info-grid">
+            <div class="info-item">
+              <span class="info-label">Order Date</span>
+              <span class="info-value">February 10, 2024</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Payment Method</span>
+              <span class="info-value">Paystack (Card)</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">Items</span>
+              <span class="info-value">3 items</span>
+            </div>
+          </div>
+
+          <div class="order-items">
+            <div class="order-item">
+              <div class="item-details">
+                <div>
+                  <div class="item-name">The Duet Box</div>
+                  <div class="item-meta">2 perfumes × 1</div>
+                </div>
+              </div>
+              <div class="item-price">₦70,000</div>
+            </div>
+          </div>
+
+          <div class="order-footer">
+            <div class="order-total">Total: ₦70,000</div>
+            <div class="order-actions">
+              <button
+                class="action-btn"
+                onclick="viewOrderDetails('SC-2024-003')"
+              >
+                View Details
+              </button>
+              <button class="action-btn" onclick="cancelOrder('SC-2024-003')">
+                Cancel Order
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State (hidden by default) -->
+      <div id="empty-orders" class="empty-orders" style="display: none">
+        <div class="empty-icon">📦</div>
+        <h2 style="margin-bottom: 1rem">No orders yet</h2>
+        <p style="color: var(--gray-light); margin-bottom: 2rem">
+          Start shopping to see your orders here
+        </p>
+        <a href="products.html" class="btn">Shop Now</a>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+
+        // Check if user is authenticated
+        if (!Scentbysally.isAuthenticated) {
+          window.location.href = "../login.html";
+          return;
+        }
+
+        // Check for payment success from checkout
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get("payment") === "success") {
+          showNotification(
+            "Payment successful! Your order has been placed.",
+            "success",
+          );
+        }
+      });
+
+      // Filter orders
+      function filterOrders(status) {
+        // Update active filter button
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        const orders = document.querySelectorAll(".order-card");
+        let visibleCount = 0;
+
+        orders.forEach((order) => {
+          if (status === "all" || order.dataset.status === status) {
+            order.style.display = "block";
+            visibleCount++;
+          } else {
+            order.style.display = "none";
+          }
+        });
+
+        // Show empty state if no orders
+        const emptyState = document.getElementById("empty-orders");
+        if (visibleCount === 0) {
+          emptyState.style.display = "block";
+        } else {
+          emptyState.style.display = "none";
+        }
+      }
+
+      // Order actions
+      function viewOrderDetails(orderNumber) {
+        console.log("Viewing order:", orderNumber);
+        showNotification("Opening order details...", "info");
+        // In real app, would navigate to order detail page
+      }
+
+      function trackOrder(orderNumber) {
+        console.log("Tracking order:", orderNumber);
+        showNotification("Tracking information sent to your email", "success");
+      }
+
+      function reorder(orderNumber) {
+        console.log("Reordering:", orderNumber);
+        showNotification("Items added to cart", "success");
+      }
+
+      function cancelOrder(orderNumber) {
+        if (confirm("Are you sure you want to cancel this order?")) {
+          console.log("Cancelling order:", orderNumber);
+          showNotification("Order cancellation requested", "success");
+        }
+      }
+
+      function writeReview(orderNumber) {
+        console.log("Writing review for order:", orderNumber);
+        window.location.href = "product.html?id=1&review=true";
+      }
+    </script>
+  </body>
+</html>

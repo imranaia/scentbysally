@@ -1,0 +1,870 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Checkout</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <!-- Paystack SDK -->
+    <script src="https://js.paystack.co/v1/inline.js"></script>
+    <style>
+      /* Page-specific styles */
+      .checkout-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 2rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .checkout-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .checkout-container {
+        max-width: 1200px;
+        margin: 2rem auto;
+        padding: 0 5%;
+      }
+
+      .checkout-wrapper {
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        gap: 2rem;
+      }
+
+      /* Checkout Forms */
+      .checkout-section {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+      }
+
+      .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--white-transparent);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .section-title .step {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      /* Address Cards */
+      .address-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .address-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .address-card:hover {
+        border-color: var(--white);
+      }
+
+      .address-card.selected {
+        border-color: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .address-card.selected .address-type,
+      .address-card.selected .address-text {
+        color: var(--black);
+      }
+
+      .address-type {
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--white);
+      }
+
+      .address-text {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+
+      .default-badge {
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        font-size: 0.7rem;
+        color: var(--gray-light);
+        text-transform: uppercase;
+      }
+
+      .address-card.selected .default-badge {
+        color: var(--black);
+      }
+
+      .add-address-btn {
+        border: 1px dashed var(--gray-dark);
+        background: none;
+        color: var(--gray-light);
+        padding: 1.5rem;
+        border-radius: 12px;
+        width: 100%;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+      }
+
+      .add-address-btn:hover {
+        border-color: var(--white);
+        color: var(--white);
+      }
+
+      /* Delivery Options */
+      .delivery-options {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .delivery-option {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 12px;
+        padding: 1.5rem;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .delivery-option:hover {
+        border-color: var(--white);
+      }
+
+      .delivery-option.selected {
+        border-color: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .delivery-option.selected .delivery-desc {
+        color: var(--black);
+      }
+
+      .delivery-radio {
+        width: 20px;
+        height: 20px;
+        accent-color: var(--white);
+      }
+
+      .delivery-info {
+        flex: 1;
+      }
+
+      .delivery-title {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .delivery-desc {
+        font-size: 0.9rem;
+        color: var(--gray-light);
+      }
+
+      .delivery-price {
+        font-weight: 600;
+        font-size: 1.1rem;
+      }
+
+      /* Order Summary */
+      .order-summary {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        position: sticky;
+        top: 100px;
+      }
+
+      .summary-items {
+        max-height: 300px;
+        overflow-y: auto;
+        margin: 1.5rem 0;
+        padding-right: 0.5rem;
+      }
+
+      .summary-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .summary-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-details {
+        flex: 1;
+      }
+
+      .item-name {
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .item-meta {
+        font-size: 0.8rem;
+        color: var(--gray-light);
+      }
+
+      .item-price {
+        font-weight: 600;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+        color: var(--gray-light);
+      }
+
+      .summary-total {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      /* Payment Button */
+      .pay-btn {
+        width: 100%;
+        padding: 1.5rem;
+        font-size: 1.2rem;
+        margin: 1.5rem 0 1rem;
+        background: var(--white);
+        color: var(--black);
+        border: none;
+      }
+
+      .pay-btn:hover {
+        background: var(--white);
+        box-shadow: 0 0 30px var(--glow-color-strong);
+      }
+
+      .secure-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      /* Address Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 1rem 0;
+      }
+
+      @media (max-width: 768px) {
+        .checkout-wrapper {
+          grid-template-columns: 1fr;
+        }
+
+        .order-summary {
+          position: static;
+        }
+
+        .address-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation (simplified for checkout) -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Checkout Header -->
+    <div class="checkout-header">
+      <h1 class="checkout-title glow-text">Checkout</h1>
+      <p style="color: var(--gray-light)">Complete your purchase</p>
+    </div>
+
+    <!-- Checkout Container -->
+    <div class="checkout-container">
+      <div class="checkout-wrapper">
+        <!-- Left Side - Forms -->
+        <div>
+          <!-- Shipping Address Section -->
+          <div class="checkout-section floating-card">
+            <div class="section-title">
+              <span>1. Shipping Address</span>
+              <span class="step">Select or add address</span>
+            </div>
+
+            <div class="address-grid" id="address-grid">
+              <!-- Address 1 -->
+              <div class="address-card selected" onclick="selectAddress(1)">
+                <div class="default-badge">DEFAULT</div>
+                <div class="address-type">Home</div>
+                <div class="address-text">
+                  <strong>Sally</strong><br />
+                  09169701140<br />
+                  123 Main Street<br />
+                  Lagos, Lagos
+                </div>
+              </div>
+
+              <!-- Address 2 -->
+              <div class="address-card" onclick="selectAddress(2)">
+                <div class="address-type">Work</div>
+                <div class="address-text">
+                  <strong>Sally</strong><br />
+                  09169701140<br />
+                  456 Business Avenue<br />
+                  Lagos, Lagos
+                </div>
+              </div>
+            </div>
+
+            <button class="add-address-btn" onclick="openAddressModal()">
+              <span>+</span> Add New Address
+            </button>
+          </div>
+
+          <!-- Delivery Method Section -->
+          <div class="checkout-section floating-card">
+            <div class="section-title">
+              <span>2. Delivery Method</span>
+              <span class="step">Choose option</span>
+            </div>
+
+            <div class="delivery-options">
+              <label
+                class="delivery-option selected"
+                onclick="selectDelivery('delivery')"
+              >
+                <input
+                  type="radio"
+                  name="delivery"
+                  class="delivery-radio"
+                  checked
+                />
+                <div class="delivery-info">
+                  <div class="delivery-title">Door Delivery</div>
+                  <div class="delivery-desc">
+                    Get it delivered to your address (3-5 business days)
+                  </div>
+                </div>
+                <div class="delivery-price" id="delivery-fee-display">
+                  ₦2,500
+                </div>
+              </label>
+
+              <label class="delivery-option" onclick="selectDelivery('pickup')">
+                <input type="radio" name="delivery" class="delivery-radio" />
+                <div class="delivery-info">
+                  <div class="delivery-title">Pickup Station</div>
+                  <div class="delivery-desc">
+                    Pick up from our Lagos store (Free)
+                  </div>
+                </div>
+                <div class="delivery-price">Free</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- Payment Method Section -->
+          <div class="checkout-section floating-card">
+            <div class="section-title">
+              <span>3. Payment Method</span>
+              <span class="step">Pay with Paystack</span>
+            </div>
+
+            <div
+              style="
+                background: var(--black);
+                padding: 1.5rem;
+                border-radius: 12px;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 1rem;
+                  margin-bottom: 1rem;
+                "
+              >
+                <img
+                  src="https://paystack.com/assets/img/logo.svg"
+                  alt="Paystack"
+                  style="height: 30px; filter: brightness(0) invert(1)"
+                />
+                <span style="color: var(--gray-light)">Secure payments</span>
+              </div>
+              <p
+                style="
+                  color: var(--gray-light);
+                  font-size: 0.9rem;
+                  line-height: 1.6;
+                "
+              >
+                You'll be redirected to Paystack to complete your payment
+                securely. We accept cards, bank transfers, and USSD.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side - Order Summary -->
+        <div>
+          <div class="order-summary floating-card">
+            <h3 style="margin-bottom: 1.5rem">Your Order</h3>
+
+            <div class="summary-items" id="summary-items">
+              <!-- Items will be loaded dynamically -->
+            </div>
+
+            <div id="summary-calculations">
+              <div class="summary-row">
+                <span>Subtotal</span>
+                <span id="subtotal">₦0</span>
+              </div>
+              <div class="summary-row">
+                <span>Delivery</span>
+                <span id="delivery-fee">₦2,500</span>
+              </div>
+              <div
+                class="summary-row"
+                style="color: var(--gray-light); font-size: 0.9rem"
+              >
+                <span>Commission (₦500/item)</span>
+                <span id="commission">₦0</span>
+              </div>
+            </div>
+
+            <div class="summary-total">
+              <div class="summary-row">
+                <span>Total</span>
+                <span id="total">₦0</span>
+              </div>
+            </div>
+
+            <button
+              class="btn pay-btn glow"
+              onclick="payWithPaystack()"
+              id="pay-button"
+            >
+              Pay with Paystack
+            </button>
+
+            <div class="secure-badge"><span>🔒</span> Secure SSL Encrypted</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Address Modal -->
+    <div class="modal" id="address-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Add New Address</h2>
+          <button class="modal-close" onclick="closeAddressModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="address-form" onsubmit="saveAddress(event)">
+          <div class="form-group">
+            <label class="form-label">Address Type</label>
+            <select class="form-input" id="address-type" required>
+              <option value="Home">Home</option>
+              <option value="Work">Work</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input
+              type="text"
+              class="form-input"
+              id="full-name"
+              placeholder="John Doe"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input
+              type="tel"
+              class="form-input"
+              id="phone"
+              placeholder="09169701140"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Street Address</label>
+            <input
+              type="text"
+              class="form-input"
+              id="street"
+              placeholder="123 Main Street"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">City</label>
+            <input
+              type="text"
+              class="form-input"
+              id="city"
+              placeholder="Lagos"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">State</label>
+            <select class="form-input" id="state" required>
+              <option value="Lagos">Lagos</option>
+              <option value="Abuja">Abuja</option>
+              <option value="Rivers">Rivers</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="checkbox-group">
+            <input type="checkbox" id="set-default" />
+            <label for="set-default">Set as default address</label>
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Save Address
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+      // Checkout state
+      let selectedAddressId = 1;
+      let deliveryMethod = "delivery";
+      let deliveryFee = 2500;
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if cart is empty
+        if (Scentbysally.cart.length === 0) {
+          window.location.href = "cart.html";
+          return;
+        }
+
+        // Check if user is authenticated
+        if (!Scentbysally.isAuthenticated) {
+          showNotification("Please login to checkout", "error");
+          window.location.href = "../login.html?redirect=checkout.html";
+          return;
+        }
+
+        loadOrderSummary();
+      });
+
+      // Load order summary
+      function loadOrderSummary() {
+        const itemsContainer = document.getElementById("summary-items");
+        let subtotal = 0;
+        let itemsHtml = "";
+
+        Scentbysally.cart.forEach((item) => {
+          const itemTotal = item.product.price * item.quantity;
+          subtotal += itemTotal;
+
+          itemsHtml += `
+                    <div class="summary-item">
+                        <div class="item-details">
+                            <div class="item-name">${item.product.name}</div>
+                            <div class="item-meta">${item.type} × ${item.quantity}</div>
+                        </div>
+                        <div class="item-price">₦${itemTotal.toLocaleString()}</div>
+                    </div>
+                `;
+        });
+
+        itemsContainer.innerHTML = itemsHtml;
+
+        // Update calculations
+        const commission = Scentbysally.cart.length * 500;
+        const total = subtotal + deliveryFee;
+
+        document.getElementById("subtotal").textContent =
+          `₦${subtotal.toLocaleString()}`;
+        document.getElementById("delivery-fee").textContent =
+          deliveryFee === 0 ? "Free" : `₦${deliveryFee.toLocaleString()}`;
+        document.getElementById("commission").textContent =
+          `₦${commission.toLocaleString()}`;
+        document.getElementById("total").textContent =
+          `₦${total.toLocaleString()}`;
+      }
+
+      // Select address
+      function selectAddress(id) {
+        selectedAddressId = id;
+        document.querySelectorAll(".address-card").forEach((card) => {
+          card.classList.remove("selected");
+        });
+        event.currentTarget.classList.add("selected");
+      }
+
+      // Select delivery method
+      function selectDelivery(method) {
+        deliveryMethod = method;
+
+        document.querySelectorAll(".delivery-option").forEach((opt) => {
+          opt.classList.remove("selected");
+        });
+        event.currentTarget.classList.add("selected");
+
+        // Update delivery fee
+        const deliveryRadio = event.currentTarget.querySelector("input");
+        deliveryRadio.checked = true;
+
+        deliveryFee = method === "delivery" ? 2500 : 0;
+
+        // Update displays
+        document.getElementById("delivery-fee").textContent =
+          deliveryFee === 0 ? "Free" : `₦${deliveryFee.toLocaleString()}`;
+        document.getElementById("delivery-fee-display").textContent =
+          deliveryFee === 0 ? "Free" : `₦${deliveryFee.toLocaleString()}`;
+
+        // Recalculate total
+        loadOrderSummary();
+      }
+
+      // Address modal functions
+      function openAddressModal() {
+        document.getElementById("address-modal").classList.add("active");
+      }
+
+      function closeAddressModal() {
+        document.getElementById("address-modal").classList.remove("active");
+      }
+
+      function saveAddress(event) {
+        event.preventDefault();
+
+        // Get form values
+        const address = {
+          type: document.getElementById("address-type").value,
+          name: document.getElementById("full-name").value,
+          phone: document.getElementById("phone").value,
+          street: document.getElementById("street").value,
+          city: document.getElementById("city").value,
+          state: document.getElementById("state").value,
+          isDefault: document.getElementById("set-default").checked,
+        };
+
+        console.log("Saving address:", address);
+
+        // Here you would save to backend
+        showNotification("Address saved successfully", "success");
+        closeAddressModal();
+
+        // Add new address to grid (simplified)
+        const addressGrid = document.getElementById("address-grid");
+        const newAddress = document.createElement("div");
+        newAddress.className =
+          "address-card" + (address.isDefault ? " selected" : "");
+        newAddress.setAttribute("onclick", "selectAddress(new)");
+        newAddress.innerHTML = `
+                ${address.isDefault ? '<div class="default-badge">DEFAULT</div>' : ""}
+                <div class="address-type">${address.type}</div>
+                <div class="address-text">
+                    <strong>${address.name}</strong><br>
+                    ${address.phone}<br>
+                    ${address.street}<br>
+                    ${address.city}, ${address.state}
+                </div>
+            `;
+        addressGrid.appendChild(newAddress);
+      }
+
+      // Paystack payment
+      function payWithPaystack() {
+        // Validate
+        if (!selectedAddressId) {
+          showNotification("Please select a shipping address", "error");
+          return;
+        }
+
+        // Calculate total
+        const subtotal = Scentbysally.cart.reduce(
+          (sum, item) => sum + item.product.price * item.quantity,
+          0,
+        );
+        const total = subtotal + deliveryFee;
+
+        // Get user email
+        const userEmail =
+          Scentbysally.user?.email || "customer@scentbysally.com";
+
+        // Paystack configuration
+        const handler = PaystackPop.setup({
+          key: "pk_test_xxxxxxxxxxxxxxxxxxxxx", // Replace with actual Paystack public key
+          email: userEmail,
+          amount: total * 100, // Convert to kobo
+          currency: "NGN",
+          ref: "SCENT-" + Math.floor(Math.random() * 1000000000 + 1), // Generate unique reference
+          metadata: {
+            custom_fields: [
+              {
+                display_name: "Cart Items",
+                variable_name: "cart_items",
+                value: Scentbysally.cart.length,
+              },
+            ],
+          },
+          callback: function (response) {
+            // Payment successful
+            console.log("Payment successful:", response);
+
+            // Clear cart
+            Scentbysally.cart = [];
+            saveCart();
+
+            showNotification(
+              "Payment successful! Redirecting to orders...",
+              "success",
+            );
+
+            // Redirect to order confirmation
+            setTimeout(() => {
+              window.location.href =
+                "orders.html?payment=success&ref=" + response.reference;
+            }, 2000);
+          },
+          onClose: function () {
+            showNotification("Payment cancelled", "error");
+          },
+        });
+
+        handler.openIframe();
+      }
+    </script>
+  </body>
+</html>

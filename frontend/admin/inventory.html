@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Admin Inventory</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .update-all-btn {
+        padding: 0.8rem 2rem;
+        background: var(--white);
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Stats */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      /* Low Stock Alert */
+      .alert-banner {
+        background: linear-gradient(145deg, #331111, #221111);
+        border: 1px solid #ff4444;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .alert-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #ff8888;
+      }
+
+      /* Search */
+      .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.8rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      /* Inventory Table */
+      .inventory-table {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--gray-light);
+        font-weight: 500;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      tr:hover td {
+        background: var(--black);
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .product-image-small {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .stock-input {
+        width: 80px;
+        padding: 0.5rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        text-align: center;
+      }
+
+      .stock-input:focus {
+        border-color: var(--white);
+        outline: none;
+      }
+
+      .stock-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        display: inline-block;
+      }
+
+      .status-instock {
+        background: #4caf5020;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+      }
+
+      .status-lowstock {
+        background: #f4433620;
+        color: #f44336;
+        border: 1px solid #f44336;
+      }
+
+      .status-outofstock {
+        background: var(--gray-dark);
+        color: var(--gray-light);
+        border: 1px solid var(--gray-light);
+      }
+
+      .update-btn {
+        background: var(--white);
+        color: var(--black);
+        border: none;
+        padding: 0.3rem 1rem;
+        cursor: pointer;
+      }
+
+      .update-btn:hover {
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .history-btn {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        padding: 0.3rem 1rem;
+        cursor: pointer;
+        margin-left: 0.3rem;
+      }
+
+      .history-btn:hover {
+        border-color: var(--white);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .bulk-update {
+        display: flex;
+        gap: 1rem;
+        margin: 1rem 0;
+      }
+
+      .bulk-update input {
+        flex: 1;
+        padding: 0.8rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .search-bar {
+          flex-direction: column;
+        }
+
+        .alert-banner {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../buyer/products.html" class="nav-link">Shop</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👤</div>
+          <div class="admin-name">John Smith</div>
+          <div class="admin-role">Mini-Admin</div>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <h4 style="margin-bottom: 0.5rem">Your Permissions:</h4>
+          <span class="permission-badge">Inventory</span>
+          <span class="permission-badge">Orders</span>
+          <span class="permission-badge">Customers</span>
+          <span class="permission-badge">Boxes</span>
+          <span class="permission-badge">Custom Orders</span>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link active"
+              >Inventory</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="orders.html" class="admin-menu-link">Orders</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="customers.html" class="admin-menu-link">Customers</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Inventory Management</h1>
+          <button class="update-all-btn" onclick="openBulkModal()">
+            Bulk Update
+          </button>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Total Items</div>
+            <div class="stat-value">1,247</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Low Stock</div>
+            <div class="stat-value" style="color: #f44336">5</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Out of Stock</div>
+            <div class="stat-value" style="color: #f44336">2</div>
+          </div>
+        </div>
+
+        <!-- Low Stock Alert -->
+        <div class="alert-banner">
+          <div class="alert-title">
+            <span>⚠️</span>
+            <span
+              ><strong>5 items need attention</strong> - Update stock
+              levels</span
+            >
+          </div>
+          <button class="btn btn-outline" onclick="showLowStock()">
+            View Low Stock
+          </button>
+        </div>
+
+        <!-- Search -->
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search products..."
+            id="searchInput"
+            onkeyup="searchInventory()"
+          />
+          <select
+            class="filter-select"
+            id="stockFilter"
+            onchange="filterInventory()"
+          >
+            <option value="all">All Items</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+            <option value="instock">In Stock</option>
+          </select>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Current Stock</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-body">
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=MO"
+                      class="product-image-small"
+                    />
+                    <span>Midnight Oud</span>
+                  </div>
+                </td>
+                <td>Designer</td>
+                <td>100ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="23"
+                    min="0"
+                    id="stock-1"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-instock">In Stock</span>
+                </td>
+                <td>2024-02-15</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(1)">
+                    Update
+                  </button>
+                  <button class="history-btn" onclick="viewHistory(1)">
+                    📋
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=RN"
+                      class="product-image-small"
+                    />
+                    <span>Rose Noir</span>
+                  </div>
+                </td>
+                <td>Oil Perfume</td>
+                <td>30ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="2"
+                    min="0"
+                    id="stock-2"
+                    style="border-color: #f44336"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-lowstock">Low Stock</span>
+                </td>
+                <td>2024-02-14</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(2)">
+                    Update
+                  </button>
+                  <button class="history-btn" onclick="viewHistory(2)">
+                    📋
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=CB"
+                      class="product-image-small"
+                    />
+                    <span>Citrus Bliss</span>
+                  </div>
+                </td>
+                <td>Oil Perfume</td>
+                <td>30ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="0"
+                    min="0"
+                    id="stock-3"
+                    style="border-color: #f44336"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-outofstock"
+                    >Out of Stock</span
+                  >
+                </td>
+                <td>2024-02-10</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(3)">
+                    Update
+                  </button>
+                  <button class="history-btn" onclick="viewHistory(3)">
+                    📋
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Bulk Update Modal -->
+    <div class="modal" id="bulk-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Bulk Stock Update</h2>
+          <button class="modal-close" onclick="closeBulkModal()">
+            &times;
+          </button>
+        </div>
+
+        <form onsubmit="bulkUpdate(event)">
+          <div class="form-group">
+            <label class="form-label">Select Products</label>
+            <select class="form-input" id="bulk-product" multiple size="4">
+              <option value="1">Midnight Oud</option>
+              <option value="2">Rose Noir</option>
+              <option value="3">Citrus Bliss</option>
+              <option value="4">Amber Mystique</option>
+            </select>
+            <p style="color: var(--gray-light); font-size: 0.7rem">
+              Hold Ctrl/Cmd to select multiple
+            </p>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Update Type</label>
+            <select class="form-input" id="bulk-type">
+              <option value="set">Set to specific value</option>
+              <option value="add">Add quantity</option>
+              <option value="remove">Remove quantity</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input
+              type="number"
+              class="form-input"
+              id="bulk-quantity"
+              required
+              min="0"
+            />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Reason for update</label>
+            <input
+              type="text"
+              class="form-input"
+              id="bulk-reason"
+              placeholder="e.g., New shipment received"
+            />
+          </div>
+
+          <button type="submit" class="btn" style="width: 100%">
+            Apply Update
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 Scentbysally. All rights reserved. | Contact: 09169701140
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        if (
+          !Scentbysally.isAuthenticated ||
+          (Scentbysally.userRole !== "admin" &&
+            Scentbysally.userRole !== "superadmin")
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Search inventory
+      function searchInventory() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const rows = document.querySelectorAll("#inventory-body tr");
+
+        rows.forEach((row) => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(searchTerm) ? "" : "none";
+        });
+      }
+
+      // Filter by stock status
+      function filterInventory() {
+        const filter = document.getElementById("stockFilter").value;
+        const rows = document.querySelectorAll("#inventory-body tr");
+
+        rows.forEach((row) => {
+          const status = row
+            .querySelector(".stock-status")
+            .textContent.toLowerCase();
+
+          if (filter === "all") {
+            row.style.display = "";
+          } else if (filter === "low" && status === "low stock") {
+            row.style.display = "";
+          } else if (filter === "out" && status === "out of stock") {
+            row.style.display = "";
+          } else if (filter === "instock" && status === "in stock") {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      // Show only low stock items
+      function showLowStock() {
+        document.getElementById("stockFilter").value = "low";
+        filterInventory();
+      }
+
+      // Update individual stock
+      function updateStock(id) {
+        const input = document.getElementById(`stock-${id}`);
+        const newStock = parseInt(input.value);
+        const row = input.closest("tr");
+        const statusSpan = row.querySelector(".stock-status");
+
+        // Update status based on new stock
+        if (newStock === 0) {
+          statusSpan.className = "stock-status status-outofstock";
+          statusSpan.textContent = "Out of Stock";
+        } else if (newStock <= 5) {
+          statusSpan.className = "stock-status status-lowstock";
+          statusSpan.textContent = "Low Stock";
+        } else {
+          statusSpan.className = "stock-status status-instock";
+          statusSpan.textContent = "In Stock";
+        }
+
+        // Update last updated
+        const today = new Date().toISOString().split("T")[0];
+        row.cells[5].textContent = today;
+
+        showNotification(`Stock updated for product ${id}`, "success");
+      }
+
+      // Bulk update functions
+      function openBulkModal() {
+        document.getElementById("bulk-modal").classList.add("active");
+      }
+
+      function closeBulkModal() {
+        document.getElementById("bulk-modal").classList.remove("active");
+      }
+
+      function bulkUpdate(event) {
+        event.preventDefault();
+
+        const products =
+          document.getElementById("bulk-product").selectedOptions;
+        const type = document.getElementById("bulk-type").value;
+        const quantity = parseInt(
+          document.getElementById("bulk-quantity").value,
+        );
+        const reason = document.getElementById("bulk-reason").value;
+
+        if (products.length === 0) {
+          showNotification("Please select at least one product", "error");
+          return;
+        }
+
+        console.log("Bulk update:", {
+          products: Array.from(products).map((p) => p.value),
+          type,
+          quantity,
+          reason,
+        });
+        showNotification(
+          `Bulk update applied to ${products.length} products`,
+          "success",
+        );
+        closeBulkModal();
+      }
+
+      // View stock history
+      function viewHistory(id) {
+        showNotification("Stock history feature coming soon", "info");
+      }
+    </script>
+  </body>
+</html>

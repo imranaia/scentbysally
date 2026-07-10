@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Custom Orders</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 55rem;
+      }
+
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar (reuse) */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      /* Tabs */
+      .request-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--white-transparent);
+        padding-bottom: 1rem;
+      }
+
+      .request-tab {
+        padding: 0.5rem 1.5rem;
+        cursor: pointer;
+        color: var(--gray-light);
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .request-tab:hover {
+        color: var(--white);
+      }
+
+      .request-tab.active {
+        color: var(--white);
+      }
+
+      .request-tab.active::after {
+        content: "";
+        position: absolute;
+        bottom: -1rem;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--white);
+        box-shadow: 0 0 10px var(--glow-color);
+      }
+
+      .badge-count {
+        background: var(--white);
+        color: var(--black);
+        padding: 0.2rem 0.5rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        margin-left: 0.5rem;
+      }
+
+      /* Request Cards */
+      .requests-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+
+      .request-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .request-card:hover {
+        border-color: var(--white);
+        transform: translateX(5px);
+      }
+
+      .request-card.pending {
+        border-left: 4px solid #ffa500;
+      }
+
+      .request-card.priced {
+        border-left: 4px solid #4caf50;
+      }
+
+      .request-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .request-customer {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .customer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--black-lighter);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+      }
+
+      .customer-info h4 {
+        margin-bottom: 0.2rem;
+      }
+
+      .customer-info p {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .request-date {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .request-status {
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .status-pending {
+        background: #ffa50020;
+        color: #ffa500;
+        border: 1px solid #ffa500;
+      }
+
+      .status-priced {
+        background: #4caf5020;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+      }
+
+      .request-items {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: var(--black-lighter);
+        border-radius: 10px;
+      }
+
+      .request-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed var(--gray-dark);
+      }
+
+      .request-item:last-child {
+        border-bottom: none;
+      }
+
+      .item-name {
+        font-weight: 500;
+      }
+
+      .item-details {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .request-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .price-section {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .price-input {
+        width: 150px;
+        padding: 0.5rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .price-display {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: #4caf50;
+      }
+
+      .action-btn {
+        padding: 0.5rem 1.5rem;
+        background: var(--white);
+        color: var(--black);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        margin-left: 0.5rem;
+      }
+
+      .action-btn.outline {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+      }
+
+      .action-btn:hover {
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .notes-section {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--black-lighter);
+        border-radius: 10px;
+        font-size: 0.9rem;
+        color: var(--gray-light);
+      }
+
+      .notes-label {
+        color: var(--white);
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .request-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 1rem;
+        }
+
+        .request-footer {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .price-section {
+          width: 100%;
+        }
+
+        .price-input {
+          flex: 1;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👑</div>
+          <div class="admin-name">Sally</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="categories.html" class="admin-menu-link">Categories</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="buyers.html" class="admin-menu-link">Buyers</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link active"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="admins.html" class="admin-menu-link">Mini-Admins</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="reports.html" class="admin-menu-link">Reports</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Custom Box Requests</h1>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Pending Requests</div>
+            <div class="stat-value" style="color: #ffa500">8</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Priced Awaiting</div>
+            <div class="stat-value" style="color: #4caf50">4</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Completed</div>
+            <div class="stat-value">23</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Avg Response Time</div>
+            <div class="stat-value">2.4h</div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="request-tabs">
+          <div class="request-tab active" onclick="filterRequests('pending')">
+            Pending <span class="badge-count">8</span>
+          </div>
+          <div class="request-tab" onclick="filterRequests('priced')">
+            Priced <span class="badge-count">4</span>
+          </div>
+          <div class="request-tab" onclick="filterRequests('all')">
+            All Requests
+          </div>
+        </div>
+
+        <!-- Requests Grid -->
+        <div class="requests-grid" id="requests-grid">
+          <!-- Pending Request 1 -->
+          <div class="request-card pending" data-status="pending">
+            <div class="request-header">
+              <div class="request-customer">
+                <div class="customer-avatar">👤</div>
+                <div class="customer-info">
+                  <h4>Sarah Johnson</h4>
+                  <p>sarah.j@email.com • 08012345678</p>
+                </div>
+              </div>
+              <div>
+                <span class="request-status status-pending">Pending</span>
+                <div class="request-date">Requested: 2024-02-17 09:30 AM</div>
+              </div>
+            </div>
+
+            <div class="request-items">
+              <h4 style="margin-bottom: 1rem">Requested Items (4 perfumes)</h4>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Midnight Oud</span>
+                  <span class="item-details"> - 100ml</span>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Rose Noir</span>
+                  <span class="item-details"> - 30ml</span>
+                </div>
+                <span>2</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Amber Mystique</span>
+                  <span class="item-details"> - 50ml</span>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Citrus Bliss</span>
+                  <span class="item-details"> - 30ml</span>
+                </div>
+                <span>1</span>
+              </div>
+            </div>
+
+            <div class="notes-section">
+              <div class="notes-label">Buyer's Note:</div>
+              "Creating a gift box for my sister's birthday. She loves woody and
+              floral scents. Please advise on pricing."
+            </div>
+
+            <div class="request-footer">
+              <div class="price-section">
+                <span>Set Price:</span>
+                <input
+                  type="number"
+                  class="price-input"
+                  placeholder="Enter amount"
+                  id="price-1"
+                />
+                <button class="action-btn" onclick="submitPrice(1)">
+                  Submit Price
+                </button>
+              </div>
+              <div>
+                <button class="action-btn outline" onclick="contactBuyer(1)">
+                  Contact
+                </button>
+                <button class="action-btn outline" onclick="declineRequest(1)">
+                  Decline
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Request 2 -->
+          <div class="request-card pending" data-status="pending">
+            <div class="request-header">
+              <div class="request-customer">
+                <div class="customer-avatar">👤</div>
+                <div class="customer-info">
+                  <h4>Michael Obi</h4>
+                  <p>michael.o@email.com • 08087654321</p>
+                </div>
+              </div>
+              <div>
+                <span class="request-status status-pending">Pending</span>
+                <div class="request-date">Requested: 2024-02-16 02:15 PM</div>
+              </div>
+            </div>
+
+            <div class="request-items">
+              <h4 style="margin-bottom: 1rem">Requested Items (3 perfumes)</h4>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Woody Elegance</span>
+                  <span class="item-details"> - 100ml</span>
+                </div>
+                <span>2</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Oriental Spice</span>
+                  <span class="item-details"> - 30ml</span>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Rose Noir</span>
+                  <span class="item-details"> - 20ml</span>
+                </div>
+                <span>1</span>
+              </div>
+            </div>
+
+            <div class="notes-section">
+              <div class="notes-label">Buyer's Note:</div>
+              "Need a corporate gift box for a client. Looking for masculine
+              scents. Please include pricing for 5 similar boxes."
+            </div>
+
+            <div class="request-footer">
+              <div class="price-section">
+                <span>Set Price:</span>
+                <input
+                  type="number"
+                  class="price-input"
+                  placeholder="Enter amount"
+                  id="price-2"
+                />
+                <button class="action-btn" onclick="submitPrice(2)">
+                  Submit Price
+                </button>
+              </div>
+              <div>
+                <button class="action-btn outline" onclick="contactBuyer(2)">
+                  Contact
+                </button>
+                <button class="action-btn outline" onclick="declineRequest(2)">
+                  Decline
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priced Request Example -->
+          <div class="request-card priced" data-status="priced">
+            <div class="request-header">
+              <div class="request-customer">
+                <div class="customer-avatar">👤</div>
+                <div class="customer-info">
+                  <h4>Amara Eze</h4>
+                  <p>amara.e@email.com • 09011223344</p>
+                </div>
+              </div>
+              <div>
+                <span class="request-status status-priced">Priced</span>
+                <div class="request-date">Priced: 2024-02-16 11:20 AM</div>
+              </div>
+            </div>
+
+            <div class="request-items">
+              <h4 style="margin-bottom: 1rem">Requested Items (2 perfumes)</h4>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Midnight Oud</span>
+                  <span class="item-details"> - 100ml</span>
+                </div>
+                <span>1</span>
+              </div>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Amber Mystique</span>
+                  <span class="item-details"> - 100ml</span>
+                </div>
+                <span>1</span>
+              </div>
+            </div>
+
+            <div class="request-footer">
+              <div class="price-section">
+                <span>Your Price:</span>
+                <span class="price-display">₦97,000</span>
+                <span class="item-details">(Awaiting buyer response)</span>
+              </div>
+              <div>
+                <button class="action-btn outline" onclick="modifyPrice(3)">
+                  Modify
+                </button>
+                <button class="action-btn outline" onclick="contactBuyer(3)">
+                  Contact
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Priced Request 2 -->
+          <div class="request-card priced" data-status="priced">
+            <div class="request-header">
+              <div class="request-customer">
+                <div class="customer-avatar">👤</div>
+                <div class="customer-info">
+                  <h4>Chioma Okonkwo</h4>
+                  <p>chioma.o@email.com • 08123456789</p>
+                </div>
+              </div>
+              <div>
+                <span class="request-status status-priced">Priced</span>
+                <div class="request-date">Priced: 2024-02-15 04:45 PM</div>
+              </div>
+            </div>
+
+            <div class="request-items">
+              <h4 style="margin-bottom: 1rem">Requested Items (5 perfumes)</h4>
+              <div class="request-item">
+                <div>
+                  <span class="item-name">Various Scents</span>
+                  <span class="item-details">Mixed sizes</span>
+                </div>
+                <span>5 items</span>
+              </div>
+            </div>
+
+            <div class="request-footer">
+              <div class="price-section">
+                <span>Your Price:</span>
+                <span class="price-display">₦156,000</span>
+                <span class="item-details" style="color: #4caf50"
+                  >(Accepted - Paid)</span
+                >
+              </div>
+              <div>
+                <button class="action-btn" onclick="processOrder(4)">
+                  Process Order
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Contact Modal -->
+    <div class="modal" id="contact-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Contact Buyer</h2>
+          <button class="modal-close" onclick="closeContactModal()">
+            &times;
+          </button>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <p>
+            <strong>Buyer:</strong>
+            <span id="contact-buyer">Sarah Johnson</span>
+          </p>
+          <p><strong>Phone:</strong> 08012345678</p>
+          <p><strong>Email:</strong> sarah.j@email.com</p>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea
+            class="form-input"
+            rows="4"
+            id="contact-message"
+            placeholder="Type your message..."
+          >
+Hello, regarding your custom box request...</textarea
+          >
+        </div>
+
+        <div style="display: flex; gap: 1rem">
+          <button class="btn" style="flex: 1" onclick="sendMessage()">
+            Send Message
+          </button>
+          <button
+            class="btn btn-outline"
+            style="flex: 1"
+            onclick="sendWhatsApp()"
+          >
+            WhatsApp
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is superadmin
+        if (
+          !Scentbysally.isAuthenticated ||
+          Scentbysally.userRole !== "superadmin"
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Filter requests by status
+      function filterRequests(status) {
+        // Update tabs
+        document.querySelectorAll(".request-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Filter cards
+        const cards = document.querySelectorAll(".request-card");
+        cards.forEach((card) => {
+          if (status === "all") {
+            card.style.display = "block";
+          } else {
+            card.style.display =
+              card.dataset.status === status ? "block" : "none";
+          }
+        });
+      }
+
+      // Submit price for custom request
+      function submitPrice(requestId) {
+        const priceInput = document.getElementById(`price-${requestId}`);
+        const price = priceInput.value;
+
+        if (!price || price <= 0) {
+          showNotification("Please enter a valid price", "error");
+          return;
+        }
+
+        // Update card to priced status
+        const card = priceInput.closest(".request-card");
+        card.classList.remove("pending");
+        card.classList.add("priced");
+        card.dataset.status = "priced";
+
+        // Update status badge
+        const statusBadge = card.querySelector(".request-status");
+        statusBadge.className = "request-status status-priced";
+        statusBadge.textContent = "Priced";
+
+        // Update footer
+        const footer = card.querySelector(".request-footer");
+        footer.innerHTML = `
+                <div class="price-section">
+                    <span>Your Price:</span>
+                    <span class="price-display">₦${Number(price).toLocaleString()}</span>
+                    <span class="item-details">(Awaiting buyer response)</span>
+                </div>
+                <div>
+                    <button class="action-btn outline" onclick="modifyPrice(${requestId})">Modify</button>
+                    <button class="action-btn outline" onclick="contactBuyer(${requestId})">Contact</button>
+                </div>
+            `;
+
+        showNotification("Price submitted successfully", "success");
+      }
+
+      // Modify existing price
+      function modifyPrice(requestId) {
+        const card = event.target.closest(".request-card");
+        const priceDisplay = card.querySelector(".price-display");
+        const currentPrice = priceDisplay.textContent
+          .replace("₦", "")
+          .replace(",", "");
+
+        // Convert back to pending for editing
+        card.classList.remove("priced");
+        card.classList.add("pending");
+        card.dataset.status = "pending";
+
+        const statusBadge = card.querySelector(".request-status");
+        statusBadge.className = "request-status status-pending";
+        statusBadge.textContent = "Pending";
+
+        // Restore input field
+        const footer = card.querySelector(".request-footer");
+        footer.innerHTML = `
+                <div class="price-section">
+                    <span>Set Price:</span>
+                    <input type="number" class="price-input" placeholder="Enter amount" id="price-${requestId}" value="${currentPrice}">
+                    <button class="action-btn" onclick="submitPrice(${requestId})">Submit Price</button>
+                </div>
+                <div>
+                    <button class="action-btn outline" onclick="contactBuyer(${requestId})">Contact</button>
+                    <button class="action-btn outline" onclick="declineRequest(${requestId})">Decline</button>
+                </div>
+            `;
+      }
+
+      // Decline request
+      function declineRequest(requestId) {
+        if (confirm("Are you sure you want to decline this request?")) {
+          const card = event.target.closest(".request-card");
+          card.style.animation = "fadeOut 0.3s ease";
+          setTimeout(() => {
+            card.remove();
+            showNotification("Request declined", "info");
+          }, 300);
+        }
+      }
+
+      // Contact buyer
+      function contactBuyer(requestId) {
+        const card = event.target.closest(".request-card");
+        const buyerName = card.querySelector(".customer-info h4").textContent;
+        document.getElementById("contact-buyer").textContent = buyerName;
+        document.getElementById("contact-modal").classList.add("active");
+      }
+
+      function closeContactModal() {
+        document.getElementById("contact-modal").classList.remove("active");
+      }
+
+      function sendMessage() {
+        const message = document.getElementById("contact-message").value;
+        console.log("Sending message:", message);
+        showNotification("Message sent to buyer", "success");
+        closeContactModal();
+      }
+
+      function sendWhatsApp() {
+        const phone = "08012345678"; // Would get from actual data
+        const message = document.getElementById("contact-message").value;
+        const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+        window.open(url, "_blank");
+        closeContactModal();
+      }
+
+      // Process order from accepted request
+      function processOrder(requestId) {
+        showNotification("Order created successfully", "success");
+        // Would redirect to order processing
+      }
+
+      // Add fadeOut animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

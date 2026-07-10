@@ -1,0 +1,889 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Manage Mini-Admins</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 55rem;
+      }
+
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar (reuse) */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .add-btn {
+        padding: 0.8rem 2rem;
+        background: var(--white);
+        border-radius: 10px;
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      .add-btn:hover {
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      /* Admins Grid */
+      .admins-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .admin-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .admin-card:hover {
+        transform: translateY(-5px);
+        border-color: var(--white);
+        box-shadow: 0 10px 20px -10px var(--glow-color);
+      }
+
+      .admin-card-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-card-avatar {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: var(--black-lighter);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+      }
+
+      .admin-card-info h3 {
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-card-info p {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .permissions-list {
+        margin: 1.5rem 0;
+      }
+
+      .permission-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 0;
+        border-bottom: 1px dashed var(--gray-dark);
+      }
+
+      .permission-name {
+        flex: 1;
+        color: var(--gray-light);
+      }
+
+      .permission-status {
+        width: 20px;
+        height: 20px;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .permission-status.allowed {
+        color: #4caf50;
+      }
+
+      .permission-status.denied {
+        color: #f44336;
+      }
+
+      .admin-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      .admin-status {
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+      }
+
+      .status-active {
+        background: #4caf5020;
+        color: #4caf50;
+        border: 1px solid #4caf50;
+      }
+
+      .status-inactive {
+        background: #f4433620;
+        color: #f44336;
+        border: 1px solid #f44336;
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .card-btn {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.3rem 1rem;
+        cursor: pointer;
+        font-size: 0.8rem;
+      }
+
+      .card-btn:hover {
+        border-color: var(--white);
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      /* Permissions Grid */
+      .permissions-grid {
+        display: grid;
+        gap: 1rem;
+        margin: 1.5rem 0;
+      }
+
+      .permission-toggle {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+      }
+
+      .toggle-switch {
+        position: relative;
+        width: 50px;
+        height: 24px;
+        background: var(--gray-dark);
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active {
+        background: var(--white);
+      }
+
+      .toggle-slider {
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        background: var(--white);
+        border-radius: 50%;
+        top: 2px;
+        left: 2px;
+        transition: all 0.3s ease;
+      }
+
+      .toggle-switch.active .toggle-slider {
+        left: 28px;
+        background: var(--black);
+      }
+
+      .generated-password {
+        background: var(--black);
+        border: 1px solid var(--white);
+        border-radius: 10px;
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        margin: 1rem 0;
+        font-family: monospace;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👑</div>
+          <div class="admin-name">Sally</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="categories.html" class="admin-menu-link">Categories</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="buyers.html" class="admin-menu-link">Buyers</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="admins.html" class="admin-menu-link active">Mini-Admins</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="reports.html" class="admin-menu-link">Reports</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Mini-Admin Management</h1>
+          <button class="add-btn" onclick="openAdminModal()">
+            + Create Mini-Admin
+          </button>
+        </div>
+
+        <!-- Admins Grid -->
+        <div class="admins-grid">
+          <!-- Admin 1 -->
+          <div class="admin-card floating-card-light">
+            <div class="admin-card-header">
+              <div class="admin-card-avatar">👤</div>
+              <div class="admin-card-info">
+                <h3>John Smith</h3>
+                <p>john.s@admin.com</p>
+              </div>
+            </div>
+
+            <div class="permissions-list">
+              <div class="permission-item">
+                <span class="permission-name">Inventory Management</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Order Processing</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Customer Support</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Product Management</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Box Creation</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+            </div>
+
+            <div class="admin-card-footer">
+              <span class="admin-status status-active">Active</span>
+              <div class="card-actions">
+                <button class="card-btn" onclick="editAdmin(1)">Edit</button>
+                <button class="card-btn" onclick="suspendAdmin(1)">
+                  Suspend
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin 2 -->
+          <div class="admin-card floating-card-light">
+            <div class="admin-card-header">
+              <div class="admin-card-avatar">👤</div>
+              <div class="admin-card-info">
+                <h3>Mary Jane</h3>
+                <p>mary.j@admin.com</p>
+              </div>
+            </div>
+
+            <div class="permissions-list">
+              <div class="permission-item">
+                <span class="permission-name">Inventory Management</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Order Processing</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Customer Support</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Product Management</span>
+                <span class="permission-status allowed">✓</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Box Creation</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+            </div>
+
+            <div class="admin-card-footer">
+              <span class="admin-status status-active">Active</span>
+              <div class="card-actions">
+                <button class="card-btn" onclick="editAdmin(2)">Edit</button>
+                <button class="card-btn" onclick="suspendAdmin(2)">
+                  Suspend
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Admin 3 (Suspended) -->
+          <div class="admin-card floating-card-light">
+            <div class="admin-card-header">
+              <div class="admin-card-avatar">👤</div>
+              <div class="admin-card-info">
+                <h3>Peter Obi</h3>
+                <p>peter.o@admin.com</p>
+              </div>
+            </div>
+
+            <div class="permissions-list">
+              <div class="permission-item">
+                <span class="permission-name">Inventory Management</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Order Processing</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Customer Support</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Product Management</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+              <div class="permission-item">
+                <span class="permission-name">Box Creation</span>
+                <span class="permission-status denied">✗</span>
+              </div>
+            </div>
+
+            <div class="admin-card-footer">
+              <span class="admin-status status-inactive">Suspended</span>
+              <div class="card-actions">
+                <button class="card-btn" onclick="editAdmin(3)">Edit</button>
+                <button class="card-btn" onclick="activateAdmin(3)">
+                  Activate
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Log -->
+        <div
+          style="
+            background: var(--black);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+          "
+        >
+          <h3 style="margin-bottom: 1rem">Recent Admin Activity</h3>
+          <table style="width: 100%">
+            <thead>
+              <tr>
+                <th>Admin</th>
+                <th>Action</th>
+                <th>Time</th>
+                <th>IP</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>John Smith</td>
+                <td>Updated inventory (Midnight Oud)</td>
+                <td>10:30 AM</td>
+                <td>192.168.1.1</td>
+              </tr>
+              <tr>
+                <td>Mary Jane</td>
+                <td>Processed order #SC-2024-005</td>
+                <td>09:15 AM</td>
+                <td>192.168.1.2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Create/Edit Admin Modal -->
+    <div class="modal" id="admin-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="admin-modal-title">Create Mini-Admin</h2>
+          <button class="modal-close" onclick="closeAdminModal()">
+            &times;
+          </button>
+        </div>
+
+        <form id="admin-form" onsubmit="saveAdmin(event)">
+          <div class="form-group">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-input" id="admin-name" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Email Address</label>
+            <input type="email" class="form-input" id="admin-email" required />
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Phone Number</label>
+            <input
+              type="tel"
+              class="form-input"
+              id="admin-phone"
+              placeholder="09169701140"
+            />
+          </div>
+
+          <div
+            style="
+              background: var(--black);
+              padding: 1rem;
+              border-radius: 10px;
+              margin: 1.5rem 0;
+            "
+          >
+            <h4 style="margin-bottom: 1rem">Set Permissions</h4>
+
+            <div class="permissions-grid">
+              <div class="permission-toggle">
+                <span>Inventory Management</span>
+                <div
+                  class="toggle-switch active"
+                  onclick="togglePermission(this, 'inventory')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+
+              <div class="permission-toggle">
+                <span>Order Processing</span>
+                <div
+                  class="toggle-switch active"
+                  onclick="togglePermission(this, 'orders')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+
+              <div class="permission-toggle">
+                <span>Customer Support</span>
+                <div
+                  class="toggle-switch active"
+                  onclick="togglePermission(this, 'customers')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+
+              <div class="permission-toggle">
+                <span>Product Management</span>
+                <div
+                  class="toggle-switch"
+                  onclick="togglePermission(this, 'products')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+
+              <div class="permission-toggle">
+                <span>Box Creation</span>
+                <div
+                  class="toggle-switch"
+                  onclick="togglePermission(this, 'boxes')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+
+              <div class="permission-toggle">
+                <span>Custom Order Pricing</span>
+                <div
+                  class="toggle-switch active"
+                  onclick="togglePermission(this, 'custom')"
+                >
+                  <div class="toggle-slider"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div id="password-section">
+            <p style="color: var(--gray-light); margin-bottom: 0.5rem">
+              Generated Password:
+            </p>
+            <div class="generated-password" id="generated-password">
+              Admin@12345
+            </div>
+            <p style="color: var(--gray-light); font-size: 0.8rem">
+              This password will be sent to the admin's email
+            </p>
+          </div>
+
+          <button
+            type="submit"
+            class="btn"
+            style="width: 100%; margin-top: 1.5rem"
+          >
+            Create Admin
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is superadmin
+        if (
+          !Scentbysally.isAuthenticated ||
+          Scentbysally.userRole !== "superadmin"
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Admin Modal Functions
+      function openAdminModal() {
+        document.getElementById("admin-modal-title").textContent =
+          "Create Mini-Admin";
+        document.getElementById("admin-form").reset();
+        generateRandomPassword();
+        document.getElementById("admin-modal").classList.add("active");
+      }
+
+      function closeAdminModal() {
+        document.getElementById("admin-modal").classList.remove("active");
+      }
+
+      function editAdmin(id) {
+        document.getElementById("admin-modal-title").textContent = "Edit Admin";
+        // In real app, would load admin data
+        document.getElementById("admin-modal").classList.add("active");
+      }
+
+      // Toggle permission
+      function togglePermission(element, permission) {
+        element.classList.toggle("active");
+
+        // Update hidden inputs or store state
+        const isActive = element.classList.contains("active");
+        console.log(`Permission ${permission} set to:`, isActive);
+      }
+
+      // Generate random password
+      function generateRandomPassword() {
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        let password = "";
+        for (let i = 0; i < 10; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById("generated-password").textContent = password;
+      }
+
+      // Save admin
+      function saveAdmin(event) {
+        event.preventDefault();
+
+        const admin = {
+          name: document.getElementById("admin-name").value,
+          email: document.getElementById("admin-email").value,
+          phone: document.getElementById("admin-phone").value,
+          password: document.getElementById("generated-password").textContent,
+          permissions: {
+            inventory: document
+              .querySelector(".permission-toggle:nth-child(1) .toggle-switch")
+              .classList.contains("active"),
+            orders: document
+              .querySelector(".permission-toggle:nth-child(2) .toggle-switch")
+              .classList.contains("active"),
+            customers: document
+              .querySelector(".permission-toggle:nth-child(3) .toggle-switch")
+              .classList.contains("active"),
+            products: document
+              .querySelector(".permission-toggle:nth-child(4) .toggle-switch")
+              .classList.contains("active"),
+            boxes: document
+              .querySelector(".permission-toggle:nth-child(5) .toggle-switch")
+              .classList.contains("active"),
+            custom: document
+              .querySelector(".permission-toggle:nth-child(6) .toggle-switch")
+              .classList.contains("active"),
+          },
+        };
+
+        console.log("Saving admin:", admin);
+        showNotification(
+          "Admin created successfully. Password sent to email.",
+          "success",
+        );
+        closeAdminModal();
+
+        // In real app, would add to grid
+      }
+
+      // Admin actions
+      function suspendAdmin(id) {
+        if (confirm("Suspend this admin?")) {
+          const card = event.target.closest(".admin-card");
+          const status = card.querySelector(".admin-status");
+          status.className = "admin-status status-inactive";
+          status.textContent = "Suspended";
+
+          const btn = event.target;
+          btn.textContent = "Activate";
+          btn.onclick = function () {
+            activateAdmin(id);
+          };
+
+          showNotification("Admin suspended", "info");
+        }
+      }
+
+      function activateAdmin(id) {
+        const card = event.target.closest(".admin-card");
+        const status = card.querySelector(".admin-status");
+        status.className = "admin-status status-active";
+        status.textContent = "Active";
+
+        const btn = event.target;
+        btn.textContent = "Suspend";
+        btn.onclick = function () {
+          suspendAdmin(id);
+        };
+
+        showNotification("Admin activated", "success");
+      }
+    </script>
+  </body>
+</html>

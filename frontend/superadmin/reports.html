@@ -1,0 +1,1019 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Reports & Analytics</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 55rem;
+      }
+
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar (reuse) */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .date-range {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+      }
+
+      .date-input {
+        padding: 0.5rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .export-btn {
+        padding: 0.5rem 1.5rem;
+        background: var(--white);
+        border-radius: 10px;
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      /* Stats Cards */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+      }
+
+      .stat-card:hover {
+        border-color: var(--white);
+        transform: translateY(-5px);
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.3rem;
+      }
+
+      .stat-subtitle {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .stat-change {
+        font-size: 0.8rem;
+        margin-top: 0.5rem;
+      }
+
+      .positive {
+        color: #4caf50;
+      }
+
+      .negative {
+        color: #f44336;
+      }
+
+      /* Commission Card */
+      .commission-card {
+        background: linear-gradient(145deg, #222, #111);
+        border: 1px solid var(--white);
+        border-radius: 20px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 1rem;
+      }
+
+      .commission-info h3 {
+        color: var(--gray-light);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .commission-amount {
+        font-size: 3rem;
+        font-weight: 700;
+        color: var(--white);
+        text-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .commission-detail {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .commission-actions {
+        display: flex;
+        gap: 1rem;
+      }
+
+      /* Charts */
+      .charts-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .chart-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .chart-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+      }
+
+      .chart-title {
+        font-size: 1.1rem;
+      }
+
+      .chart-period {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .chart-placeholder {
+        height: 250px;
+        background: linear-gradient(
+          45deg,
+          var(--black-lighter) 25%,
+          transparent 25%
+        );
+        background-size: 30px 30px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--gray-light);
+        position: relative;
+      }
+
+      /* Bar Chart Simulation */
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        height: 200px;
+        width: 100%;
+        padding: 1rem;
+      }
+
+      .bar-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 12%;
+      }
+
+      .bar {
+        width: 100%;
+        background: var(--white);
+        height: calc(100% - 25px);
+        min-height: 20px;
+        transition: height 0.3s ease;
+        position: relative;
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      .bar-label {
+        margin-top: 0.5rem;
+        color: var(--gray-light);
+        font-size: 0.7rem;
+      }
+
+      /* Tables */
+      .reports-table {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        overflow-x: auto;
+      }
+
+      .table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+      }
+
+      .table-title {
+        font-size: 1.1rem;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--gray-light);
+        font-weight: 500;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      tr:hover td {
+        background: var(--black-lighter);
+      }
+
+      .text-right {
+        text-align: right;
+      }
+
+      .highlight {
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      /* Tabs */
+      .report-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--white-transparent);
+        padding-bottom: 1rem;
+      }
+
+      .report-tab {
+        padding: 0.5rem 1.5rem;
+        cursor: pointer;
+        color: var(--gray-light);
+        transition: all 0.3s ease;
+      }
+
+      .report-tab:hover {
+        color: var(--white);
+      }
+
+      .report-tab.active {
+        color: var(--white);
+        border-bottom: 2px solid var(--white);
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .charts-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .commission-card {
+          flex-direction: column;
+          text-align: center;
+        }
+
+        .content-header {
+          flex-direction: column;
+          align-items: flex-start;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👑</div>
+          <div class="admin-name">Sally</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="categories.html" class="admin-menu-link">Categories</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="buyers.html" class="admin-menu-link">Buyers</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="admins.html" class="admin-menu-link">Mini-Admins</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="reports.html" class="admin-menu-link active">Reports</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Reports & Analytics</h1>
+          <div class="date-range">
+            <input
+              type="date"
+              class="date-input"
+              id="start-date"
+              value="2024-02-01"
+            />
+            <span>to</span>
+            <input
+              type="date"
+              class="date-input"
+              id="end-date"
+              value="2024-02-29"
+            />
+            <button class="export-btn" onclick="exportReport()">
+              Export PDF
+            </button>
+          </div>
+        </div>
+
+        <!-- Commission Highlight -->
+        <div class="commission-card">
+          <div class="commission-info">
+            <h3>Total Commission Earned (₦500 per item)</h3>
+            <div class="commission-amount">₦78,500</div>
+            <div class="commission-detail">
+              Based on 157 items sold this period
+            </div>
+          </div>
+          <div class="commission-actions">
+            <button class="btn btn-outline" onclick="viewCommissionDetails()">
+              View Details
+            </button>
+            <button class="btn" onclick="withdrawCommission()">Withdraw</button>
+          </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Total Revenue</div>
+            <div class="stat-value">₦1,245,000</div>
+            <div class="stat-subtitle">156 orders</div>
+            <div class="stat-change positive">↑ 12.5% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Average Order Value</div>
+            <div class="stat-value">₦7,980</div>
+            <div class="stat-subtitle">Per order</div>
+            <div class="stat-change positive">↑ 5.2% vs last month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Top Product</div>
+            <div class="stat-value">Midnight Oud</div>
+            <div class="stat-subtitle">45 units sold</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Conversion Rate</div>
+            <div class="stat-value">3.2%</div>
+            <div class="stat-subtitle">4,875 visitors</div>
+            <div class="stat-change positive">↑ 0.8% vs last month</div>
+          </div>
+        </div>
+
+        <!-- Report Tabs -->
+        <div class="report-tabs">
+          <div class="report-tab active" onclick="switchReportTab('sales')">
+            Sales Report
+          </div>
+          <div class="report-tab" onclick="switchReportTab('commission')">
+            Commission Report
+          </div>
+          <div class="report-tab" onclick="switchReportTab('products')">
+            Product Performance
+          </div>
+        </div>
+
+        <!-- Charts -->
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Sales Trend</h3>
+              <span class="chart-period">Last 7 days</span>
+            </div>
+            <div class="chart-placeholder">
+              <div class="bar-chart">
+                <div class="bar-container">
+                  <div class="bar" style="height: 120px"></div>
+                  <span class="bar-label">Mon</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 150px"></div>
+                  <span class="bar-label">Tue</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 90px"></div>
+                  <span class="bar-label">Wed</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 180px"></div>
+                  <span class="bar-label">Thu</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 200px"></div>
+                  <span class="bar-label">Fri</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 160px"></div>
+                  <span class="bar-label">Sat</span>
+                </div>
+                <div class="bar-container">
+                  <div class="bar" style="height: 110px"></div>
+                  <span class="bar-label">Sun</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-header">
+              <h3 class="chart-title">Category Distribution</h3>
+              <span class="chart-period">By revenue</span>
+            </div>
+            <div class="chart-placeholder">
+              <div style="padding: 2rem">
+                <div style="margin-bottom: 1rem">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: 0.3rem;
+                    "
+                  >
+                    <span>Designer</span>
+                    <span>₦645,000 (52%)</span>
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--gray-dark);
+                      border-radius: 4px;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 52%;
+                        height: 100%;
+                        background: var(--white);
+                        border-radius: 4px;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <div style="margin-bottom: 1rem">
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: 0.3rem;
+                    "
+                  >
+                    <span>Oil Perfume</span>
+                    <span>₦435,000 (35%)</span>
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--gray-dark);
+                      border-radius: 4px;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 35%;
+                        height: 100%;
+                        background: var(--white);
+                        border-radius: 4px;
+                      "
+                    ></div>
+                  </div>
+                </div>
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      justify-content: space-between;
+                      margin-bottom: 0.3rem;
+                    "
+                  >
+                    <span>Boxes</span>
+                    <span>₦165,000 (13%)</span>
+                  </div>
+                  <div
+                    style="
+                      height: 8px;
+                      background: var(--gray-dark);
+                      border-radius: 4px;
+                    "
+                  >
+                    <div
+                      style="
+                        width: 13%;
+                        height: 100%;
+                        background: var(--white);
+                        border-radius: 4px;
+                      "
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sales Report Table -->
+        <div class="reports-table" id="sales-report">
+          <div class="table-header">
+            <h3 class="table-title">Recent Transactions</h3>
+            <button class="btn btn-outline" onclick="downloadCSV()">
+              Download CSV
+            </button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Order ID</th>
+                <th>Date</th>
+                <th>Customer</th>
+                <th>Items</th>
+                <th>Total</th>
+                <th>Commission</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>#SC-2024-001</td>
+                <td>2024-02-15</td>
+                <td>Sarah Johnson</td>
+                <td>3</td>
+                <td>₦97,500</td>
+                <td class="highlight">₦1,500</td>
+                <td>
+                  <span class="status-badge status-active">Completed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>#SC-2024-002</td>
+                <td>2024-02-14</td>
+                <td>Michael Obi</td>
+                <td>1</td>
+                <td>₦52,000</td>
+                <td class="highlight">₦500</td>
+                <td>
+                  <span class="status-badge status-active">Completed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>#SC-2024-003</td>
+                <td>2024-02-14</td>
+                <td>Amara Eze</td>
+                <td>2</td>
+                <td>₦70,000</td>
+                <td class="highlight">₦1,000</td>
+                <td>
+                  <span class="status-badge status-active">Completed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>#SC-2024-004</td>
+                <td>2024-02-13</td>
+                <td>John Doe</td>
+                <td>4</td>
+                <td>₦121,000</td>
+                <td class="highlight">₦2,000</td>
+                <td>
+                  <span class="status-badge status-active">Completed</span>
+                </td>
+              </tr>
+              <tr>
+                <td>#SC-2024-005</td>
+                <td>2024-02-13</td>
+                <td>Chioma Okonkwo</td>
+                <td>2</td>
+                <td>₦83,000</td>
+                <td class="highlight">₦1,000</td>
+                <td>
+                  <span class="status-badge status-active">Completed</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Commission Report (hidden by default) -->
+        <div class="reports-table" id="commission-report" style="display: none">
+          <div class="table-header">
+            <h3 class="table-title">Commission Breakdown</h3>
+            <button class="btn btn-outline" onclick="downloadCommissionCSV()">
+              Download CSV
+            </button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Period</th>
+                <th>Orders</th>
+                <th>Items Sold</th>
+                <th>Commission Rate</th>
+                <th>Total Commission</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Feb 1-15, 2024</td>
+                <td>45</td>
+                <td>78</td>
+                <td>₦500/item</td>
+                <td class="highlight">₦39,000</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+              </tr>
+              <tr>
+                <td>Jan 16-31, 2024</td>
+                <td>52</td>
+                <td>91</td>
+                <td>₦500/item</td>
+                <td class="highlight">₦45,500</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+              </tr>
+              <tr>
+                <td>Jan 1-15, 2024</td>
+                <td>38</td>
+                <td>67</td>
+                <td>₦500/item</td>
+                <td class="highlight">₦33,500</td>
+                <td><span class="status-badge status-active">Paid</span></td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr style="border-top: 2px solid var(--white-transparent)">
+                <td colspan="4" class="text-right"><strong>Total:</strong></td>
+                <td class="highlight"><strong>₦118,000</strong></td>
+                <td></td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <!-- Product Performance Report (hidden by default) -->
+        <div class="reports-table" id="products-report" style="display: none">
+          <div class="table-header">
+            <h3 class="table-title">Top Performing Products</h3>
+            <button class="btn btn-outline" onclick="downloadProductsCSV()">
+              Download CSV
+            </button>
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Units Sold</th>
+                <th>Revenue</th>
+                <th>Commission</th>
+                <th>Stock Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Midnight Oud</td>
+                <td>Designer</td>
+                <td>45</td>
+                <td>₦1,890,000</td>
+                <td>₦22,500</td>
+                <td>
+                  <span class="status-badge status-active">In Stock</span>
+                </td>
+              </tr>
+              <tr>
+                <td>Rose Noir</td>
+                <td>Oil Perfume</td>
+                <td>38</td>
+                <td>₦1,216,000</td>
+                <td>₦19,000</td>
+                <td>
+                  <span class="status-badge status-warning">Low Stock</span>
+                </td>
+              </tr>
+              <tr>
+                <td>Amber Mystique</td>
+                <td>Designer</td>
+                <td>32</td>
+                <td>₦1,664,000</td>
+                <td>₦16,000</td>
+                <td>
+                  <span class="status-badge status-active">In Stock</span>
+                </td>
+              </tr>
+              <tr>
+                <td>The Duet Box</td>
+                <td>Boxes</td>
+                <td>28</td>
+                <td>₦2,324,000</td>
+                <td>₦14,000</td>
+                <td>
+                  <span class="status-badge status-active">In Stock</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Summary Cards -->
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-top: 2rem;
+          "
+        >
+          <div
+            style="background: var(--black); padding: 1rem; border-radius: 10px"
+          >
+            <div style="color: var(--gray-light)">Best Day</div>
+            <div style="font-size: 1.2rem; font-weight: 600">Friday</div>
+            <div style="color: #4caf50">₦245,000 average</div>
+          </div>
+          <div
+            style="background: var(--black); padding: 1rem; border-radius: 10px"
+          >
+            <div style="color: var(--gray-light)">Peak Hour</div>
+            <div style="font-size: 1.2rem; font-weight: 600">7-9 PM</div>
+            <div style="color: #4caf50">23 orders</div>
+          </div>
+          <div
+            style="background: var(--black); padding: 1rem; border-radius: 10px"
+          >
+            <div style="color: var(--gray-light)">Top Location</div>
+            <div style="font-size: 1.2rem; font-weight: 600">Lagos</div>
+            <div style="color: #4caf50">68% of orders</div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is superadmin
+        if (
+          !Scentbysally.isAuthenticated ||
+          Scentbysally.userRole !== "superadmin"
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Switch report tabs
+      function switchReportTab(tab) {
+        // Update tab styling
+        document.querySelectorAll(".report-tab").forEach((t) => {
+          t.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Show relevant report
+        document.getElementById("sales-report").style.display = "none";
+        document.getElementById("commission-report").style.display = "none";
+        document.getElementById("products-report").style.display = "none";
+
+        if (tab === "sales") {
+          document.getElementById("sales-report").style.display = "block";
+        } else if (tab === "commission") {
+          document.getElementById("commission-report").style.display = "block";
+        } else if (tab === "products") {
+          document.getElementById("products-report").style.display = "block";
+        }
+      }
+
+      // Export functions
+      function exportReport() {
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        showNotification(
+          `Exporting report from ${startDate} to ${endDate}`,
+          "info",
+        );
+      }
+
+      function downloadCSV() {
+        showNotification("Sales report downloaded as CSV", "success");
+      }
+
+      function downloadCommissionCSV() {
+        showNotification("Commission report downloaded as CSV", "success");
+      }
+
+      function downloadProductsCSV() {
+        showNotification("Products report downloaded as CSV", "success");
+      }
+
+      // Commission functions
+      function viewCommissionDetails() {
+        switchReportTab("commission");
+        document.querySelectorAll(".report-tab")[1].click();
+      }
+
+      function withdrawCommission() {
+        showNotification(
+          "Commission withdrawal request sent to bank",
+          "success",
+        );
+      }
+    </script>
+  </body>
+</html>

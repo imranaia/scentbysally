@@ -1,0 +1,318 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Luxury Perfumes</title>
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .hero-section {
+        height: 100vh;
+        position: relative;
+        overflow: hidden;
+        background: var(--black);
+      }
+
+      .hero-content {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        text-align: center;
+        z-index: 10;
+        width: 100%;
+        padding: 2rem;
+      }
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 56rem;
+      }
+
+      .hero-title {
+        font-size: 5rem;
+        font-weight: 300;
+        margin-bottom: 1rem;
+        animation: fadeInUp 1s ease;
+      }
+
+      .hero-subtitle {
+        font-size: 1.5rem;
+        color: var(--gray-light);
+        margin-bottom: 2rem;
+        animation: fadeInUp 1s ease 0.2s both;
+      }
+
+      .hero-btn {
+        font-size: 1.2rem;
+        padding: 1rem 3rem;
+        animation: fadeInUp 1s ease 0.4s both;
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(30px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .featured-section {
+        padding: 5rem 5%;
+        background: var(--black-lighter);
+      }
+
+      .section-title {
+        font-size: 2.5rem;
+        text-align: center;
+        margin-bottom: 3rem;
+        position: relative;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: -1rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px;
+        height: 1px;
+        background: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .story-section {
+        padding: 5rem 5%;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: center;
+      }
+
+      .story-title {
+        font-size: 3rem;
+        margin-bottom: 2rem;
+      }
+
+      .story-text {
+        color: var(--gray-light);
+        font-size: 1.2rem;
+        line-height: 1.8;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        margin-top: 3rem;
+      }
+
+      .canvas-container {
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+
+      @media (max-width: 768px) {
+        .hero-title {
+          font-size: 3rem;
+        }
+
+        .hero-subtitle {
+          font-size: 1.2rem;
+        }
+
+        .story-section {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Hero Section with 3D Canvas -->
+    <section class="hero-section">
+      <div class="canvas-container" id="canvas-container">
+        <canvas id="canvas"></canvas>
+      </div>
+      <div class="hero-content">
+        <h1 class="hero-title glow-text">Scentbysally</h1>
+        <p class="hero-subtitle">Luxury Perfumes, Curated for You</p>
+        <a href="buyer/products.html" class="btn hero-btn glow"
+          >Explore Collection</a
+        >
+      </div>
+    </section>
+
+    <!-- Featured Products -->
+    <section class="featured-section">
+      <h2 class="section-title">Featured Fragrances</h2>
+      <div class="product-grid" id="featured-products">
+        <!-- Products will be loaded dynamically -->
+        <div class="product-card floating-card-light">
+          <img src="assets/p.jpeg" alt="Product" class="product-image" />
+          <div class="product-info">
+            <h3 class="product-title">Midnight Oud</h3>
+            <p class="product-price">₦45,000</p>
+            <p class="product-category">Designer</p>
+            <button
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 1rem"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+        <div class="product-card floating-card-light">
+          <img src="assets/p1.jpeg" alt="Product" class="product-image" />
+          <div class="product-info">
+            <h3 class="product-title">Rose Noir</h3>
+            <p class="product-price">₦38,000</p>
+            <p class="product-category">Oil Perfume</p>
+            <button
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 1rem"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+        <div class="product-card floating-card-light">
+          <img src="assets/p2.jpeg" alt="Product" class="product-image" />
+          <div class="product-info">
+            <h3 class="product-title">Amber Mystique</h3>
+            <p class="product-price">₦52,000</p>
+            <p class="product-category">Designer</p>
+            <button
+              class="btn btn-outline"
+              style="width: 100%; margin-top: 1rem"
+            >
+              View Details
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Story Section -->
+    <section class="story-section">
+      <div>
+        <h2 class="story-title">
+          The Story of <span class="glow-text">Scentbysally</span>
+        </h2>
+        <p class="story-text">
+          ScentbySally started with a simple desire: to create luxurious oil
+          perfumes that last long, feel rich, and make every woman feel
+          confident and special. I wanted something affordable yet classy a
+          scent that stays with you from morning to night, leaving a soft but
+          powerful impression.
+        </p>
+        <p class="story-text" style="margin-top: 1.5rem">
+          From designer classics to exclusive oil perfumes, each bottle in our
+          cEach fragrance under ScentbySally is carefully selected to represent
+          different moods bold, soft, sweet, mysterious, or fresh. Because every
+          woman carries a different energy, and your scent should match your
+          aura.
+        </p>
+        <p class="story-text" style="margin-top: 1.5rem">
+          This brand is not just about perfume. It is about identity. It is
+          about walking into a room and being remembered. It is about self-love,
+          growth, and building something meaningful from passion.
+        </p>
+        <div class="stats-grid">
+          <div class="stat-item">
+            <div class="stat-value">50+</div>
+            <div class="stat-label">Fragrances</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">1000+</div>
+            <div class="stat-label">Happy Customers</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">24/7</div>
+            <div class="stat-label">Support</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <img
+          src="assets/sally.jpeg"
+          alt="Sally"
+          style="
+            width: 100%;
+            border-radius: 15px;
+            box-shadow: 0 0 30px var(--glow-color);
+          "
+        />
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <a href="buyer/products.html">Shop</a>
+          <a href="buyer/pre-made-boxes.html">Boxes</a>
+          <a href="buyer/box-builder.html">Custom Box</a>
+          <a href="login.html">Account</a>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/3d.js"></script>
+    <script>
+      // Initialize 3D slideshow when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        if (typeof init3DSlideshow === "function") {
+          init3DSlideshow("canvas");
+        }
+      });
+    </script>
+  </body>
+</html>

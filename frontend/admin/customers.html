@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Customer Support</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+      }
+
+      .search-section {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .search-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+      }
+
+      .search-box {
+        display: flex;
+        gap: 1rem;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 1rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        font-size: 1rem;
+      }
+
+      .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .action-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .action-card:hover {
+        border-color: var(--white);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px -10px var(--glow-color);
+      }
+
+      .action-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .action-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+
+      .action-desc {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .recent-customers {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .customer-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .customer-item:last-child {
+        border-bottom: none;
+      }
+
+      .customer-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .customer-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--black-lighter);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .customer-details h4 {
+        margin-bottom: 0.2rem;
+      }
+
+      .customer-details p {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .help-btn {
+        padding: 0.5rem 1rem;
+        background: none;
+        border: 1px solid var(--gray-dark);
+        color: var(--white);
+        cursor: pointer;
+      }
+
+      .help-btn:hover {
+        border-color: var(--white);
+      }
+
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 400px;
+        width: 90%;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .password-display {
+        background: var(--black);
+        border: 1px solid var(--white);
+        padding: 1rem;
+        text-align: center;
+        font-size: 1.2rem;
+        letter-spacing: 2px;
+        margin: 1rem 0;
+        font-family: monospace;
+      }
+
+      .success-message {
+        color: #4caf50;
+        text-align: center;
+        margin: 1rem 0;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .search-box {
+          flex-direction: column;
+        }
+
+        .quick-actions {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../buyer/products.html" class="nav-link">Shop</a>
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="#" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👤</div>
+          <div class="admin-name">John Smith</div>
+          <div class="admin-role">Mini-Admin</div>
+        </div>
+
+        <div style="margin-bottom: 2rem">
+          <h4 style="margin-bottom: 0.5rem">Your Permissions:</h4>
+          <span class="permission-badge">Inventory</span>
+          <span class="permission-badge">Orders</span>
+          <span class="permission-badge">Customers</span>
+          <span class="permission-badge">Boxes</span>
+          <span class="permission-badge">Custom Orders</span>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link">Inventory</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="orders.html" class="admin-menu-link">Orders</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="customers.html" class="admin-menu-link active"
+              >Customers</a
+            >
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Customer Support</h1>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Total Customers</div>
+            <div class="stat-value">156</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Support Tickets</div>
+            <div class="stat-value">8</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Password Resets</div>
+            <div class="stat-value">12</div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <div class="action-card" onclick="openPasswordReset()">
+            <div class="action-icon">🔑</div>
+            <h3 class="action-title">Reset Customer Password</h3>
+            <p class="action-desc">
+              Help customers regain access to their accounts
+            </p>
+          </div>
+          <div class="action-card" onclick="openCustomerSearch()">
+            <div class="action-icon">🔍</div>
+            <h3 class="action-title">Find Customer</h3>
+            <p class="action-desc">
+              Search for customer details and order history
+            </p>
+          </div>
+          <div class="action-card" onclick="openSupportTicket()">
+            <div class="action-icon">💬</div>
+            <h3 class="action-title">Support Tickets</h3>
+            <p class="action-desc">View and respond to customer inquiries</p>
+          </div>
+        </div>
+
+        <!-- Customer Search -->
+        <div class="search-section">
+          <h3 class="search-title">Find Customer</h3>
+          <div class="search-box">
+            <input
+              type="text"
+              class="search-input"
+              placeholder="Search by name, email or phone number..."
+              id="customer-search"
+            />
+            <button class="btn" onclick="searchCustomer()">Search</button>
+          </div>
+        </div>
+
+        <!-- Recent Customers -->
+        <div class="recent-customers">
+          <h3 style="margin-bottom: 1rem">Recent Customer Support</h3>
+
+          <div class="customer-item">
+            <div class="customer-info">
+              <div class="customer-avatar">👤</div>
+              <div class="customer-details">
+                <h4>Sarah Johnson</h4>
+                <p>sarah.j@email.com • 08012345678</p>
+              </div>
+            </div>
+            <div>
+              <button class="help-btn" onclick="resetPassword('Sarah Johnson')">
+                Reset Password
+              </button>
+              <button
+                class="help-btn"
+                onclick="viewCustomerOrders('Sarah Johnson')"
+              >
+                Orders
+              </button>
+            </div>
+          </div>
+
+          <div class="customer-item">
+            <div class="customer-info">
+              <div class="customer-avatar">👤</div>
+              <div class="customer-details">
+                <h4>Michael Obi</h4>
+                <p>michael.o@email.com • 08087654321</p>
+              </div>
+            </div>
+            <div>
+              <button class="help-btn" onclick="resetPassword('Michael Obi')">
+                Reset Password
+              </button>
+              <button
+                class="help-btn"
+                onclick="viewCustomerOrders('Michael Obi')"
+              >
+                Orders
+              </button>
+            </div>
+          </div>
+
+          <div class="customer-item">
+            <div class="customer-info">
+              <div class="customer-avatar">👤</div>
+              <div class="customer-details">
+                <h4>Amara Eze</h4>
+                <p>amara.e@email.com • 09011223344</p>
+              </div>
+            </div>
+            <div>
+              <button class="help-btn" onclick="resetPassword('Amara Eze')">
+                Reset Password
+              </button>
+              <button
+                class="help-btn"
+                onclick="viewCustomerOrders('Amara Eze')"
+              >
+                Orders
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- Password Reset Modal -->
+    <div class="modal" id="password-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Reset Password</h2>
+          <button class="modal-close" onclick="closePasswordModal()">
+            &times;
+          </button>
+        </div>
+
+        <div style="margin-bottom: 1.5rem">
+          <p>
+            <strong>Customer:</strong>
+            <span id="reset-customer-name">Sarah Johnson</span>
+          </p>
+        </div>
+
+        <div class="password-display" id="new-password">Scent@123456</div>
+
+        <div style="display: flex; gap: 1rem; margin: 1.5rem 0">
+          <button class="btn" style="flex: 1" onclick="copyPassword()">
+            Copy
+          </button>
+          <button
+            class="btn btn-outline"
+            style="flex: 1"
+            onclick="emailPassword()"
+          >
+            Email to Customer
+          </button>
+        </div>
+
+        <button
+          class="btn btn-outline"
+          style="width: 100%"
+          onclick="generateNewPassword()"
+        >
+          Generate New Password
+        </button>
+
+        <div id="success-message" class="success-message" style="display: none">
+          ✓ Password reset email sent successfully
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-bottom">
+        <p>
+          &copy; 2024 Scentbysally. All rights reserved. | Contact: 09169701140
+        </p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        if (
+          !Scentbysally.isAuthenticated ||
+          (Scentbysally.userRole !== "admin" &&
+            Scentbysally.userRole !== "superadmin")
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      function openPasswordReset() {
+        document.getElementById("password-modal").classList.add("active");
+      }
+
+      function closePasswordModal() {
+        document.getElementById("password-modal").classList.remove("active");
+        document.getElementById("success-message").style.display = "none";
+      }
+
+      function resetPassword(customerName) {
+        document.getElementById("reset-customer-name").textContent =
+          customerName;
+        generateNewPassword();
+        openPasswordReset();
+      }
+
+      function generateNewPassword() {
+        const chars =
+          "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%";
+        let password = "";
+        for (let i = 0; i < 12; i++) {
+          password += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        document.getElementById("new-password").textContent = password;
+        document.getElementById("success-message").style.display = "none";
+      }
+
+      function copyPassword() {
+        const password = document.getElementById("new-password").textContent;
+        navigator.clipboard.writeText(password);
+        showNotification("Password copied to clipboard", "success");
+      }
+
+      function emailPassword() {
+        document.getElementById("success-message").style.display = "block";
+        showNotification("Password reset email sent", "success");
+
+        setTimeout(() => {
+          document.getElementById("success-message").style.display = "none";
+        }, 3000);
+      }
+
+      function openCustomerSearch() {
+        showNotification(
+          "Type customer details in the search box above",
+          "info",
+        );
+        document.getElementById("customer-search").focus();
+      }
+
+      function searchCustomer() {
+        const searchTerm = document.getElementById("customer-search").value;
+        if (searchTerm) {
+          showNotification(`Searching for "${searchTerm}"...`, "info");
+        }
+      }
+
+      function openSupportTicket() {
+        showNotification("Opening support tickets...", "info");
+      }
+
+      function viewCustomerOrders(customerName) {
+        showNotification(`Loading orders for ${customerName}...`, "info");
+      }
+    </script>
+  </body>
+</html>

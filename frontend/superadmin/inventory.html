@@ -1,0 +1,967 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Inventory Management</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+
+      .logo-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--white);
+        margin-right: 55rem;
+      }
+
+      .admin-container {
+        display: grid;
+        grid-template-columns: 260px 1fr;
+        gap: 1rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar (reuse) */
+      .admin-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .admin-profile {
+        text-align: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .admin-avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--black);
+        border: 2px solid var(--white);
+        margin: 0 auto 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+      }
+
+      .admin-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .admin-role {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .admin-menu {
+        list-style: none;
+      }
+
+      .admin-menu-item {
+        margin-bottom: 0.3rem;
+      }
+
+      .admin-menu-link {
+        display: block;
+        padding: 0.8rem 1rem;
+        color: var(--gray-light);
+        text-decoration: none;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+      }
+
+      .admin-menu-link:hover,
+      .admin-menu-link.active {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Main Content */
+      .admin-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 1rem;
+      }
+
+      .content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .content-title {
+        font-size: 1.5rem;
+      }
+
+      /* Inventory Stats */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+
+      .stat-card {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        padding: 1.5rem;
+      }
+
+      .stat-title {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+      }
+
+      .stat-warning {
+        color: #f44336;
+        font-size: 0.8rem;
+      }
+
+      .stat-success {
+        color: #4caf50;
+        font-size: 0.8rem;
+      }
+
+      /* Alert Banner */
+      .alert-banner {
+        background: linear-gradient(145deg, #331111, #221111);
+        border: 1px solid #ff4444;
+        border-radius: 15px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .alert-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #ff8888;
+      }
+
+      .alert-count {
+        background: #ff4444;
+        color: white;
+        padding: 0.2rem 1rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+      }
+
+      /* Search and Filter */
+      .search-bar {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .search-input {
+        flex: 1;
+        padding: 0.8rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .filter-select {
+        padding: 0.8rem 2rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .update-all-btn {
+        padding: 0.8rem 2rem;
+        background: var(--white);
+        border-radius: 10px;
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+      }
+
+      .add-btn {
+        border-radius: 10px;
+      }
+
+      /* Inventory Table */
+      .inventory-table {
+        overflow-x: auto;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      th {
+        text-align: left;
+        padding: 1rem;
+        color: var(--gray-light);
+        font-weight: 500;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      td {
+        padding: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      tr:hover td {
+        background: var(--black);
+      }
+
+      .product-info {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .product-image-small {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        object-fit: cover;
+      }
+
+      .stock-input {
+        width: 80px;
+        padding: 0.5rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        text-align: center;
+      }
+
+      .stock-status {
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-align: center;
+        display: inline-block;
+      }
+
+      .status-instock {
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .status-lowstock {
+        background: #ff4444;
+        color: white;
+      }
+
+      .status-outofstock {
+        background: var(--gray-dark);
+        color: var(--gray-light);
+      }
+
+      .update-btn {
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        padding: 0.3rem 1rem;
+        cursor: pointer;
+      }
+
+      .update-btn:hover {
+        border-color: var(--white);
+      }
+
+      /* Stock History Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.95);
+        z-index: 2000;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal.active {
+        display: flex;
+      }
+
+      .modal-content {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .modal-close {
+        background: none;
+        border: none;
+        color: var(--white);
+        font-size: 2rem;
+        cursor: pointer;
+      }
+
+      .history-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .history-date {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+      }
+
+      .history-change {
+        font-weight: 600;
+      }
+
+      .history-change.positive {
+        color: #4caf50;
+      }
+
+      .history-change.negative {
+        color: #f44336;
+      }
+
+      @media (max-width: 768px) {
+        .admin-container {
+          grid-template-columns: 1fr;
+        }
+
+        .admin-sidebar {
+          position: static;
+        }
+
+        .search-bar {
+          flex-direction: column;
+        }
+
+        .alert-banner {
+          flex-direction: column;
+          gap: 1rem;
+          text-align: center;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-title">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
+      </div>
+    </nav>
+
+    <!-- Admin Container -->
+    <div class="admin-container">
+      <!-- Sidebar -->
+      <aside class="admin-sidebar floating-card">
+        <div class="admin-profile">
+          <div class="admin-avatar">👑</div>
+          <div class="admin-name">Sally</div>
+          <div class="admin-role">Super Admin</div>
+        </div>
+
+        <ul class="admin-menu">
+          <li class="admin-menu-item">
+            <a href="dashboard.html" class="admin-menu-link">Dashboard</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="products.html" class="admin-menu-link">Products</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="categories.html" class="admin-menu-link">Categories</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="boxes.html" class="admin-menu-link">Boxes</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="inventory.html" class="admin-menu-link active"
+              >Inventory</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="buyers.html" class="admin-menu-link">Buyers</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="custom-orders.html" class="admin-menu-link"
+              >Custom Orders</a
+            >
+          </li>
+          <li class="admin-menu-item">
+            <a href="admins.html" class="admin-menu-link">Mini-Admins</a>
+          </li>
+          <li class="admin-menu-item">
+            <a href="reports.html" class="admin-menu-link">Reports</a>
+          </li>
+        </ul>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="admin-content">
+        <div class="content-header">
+          <h1 class="content-title">Inventory Management</h1>
+          <button class="add-btn" onclick="exportInventory()">
+            📊 Export Report
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-title">Total Products</div>
+            <div class="stat-value">24</div>
+            <div class="stat-success">+3 this month</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Total Items in Stock</div>
+            <div class="stat-value">1,247</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Low Stock Items</div>
+            <div class="stat-value" style="color: #f44336">5</div>
+            <div class="stat-warning">Need reorder</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-title">Out of Stock</div>
+            <div class="stat-value" style="color: #f44336">2</div>
+            <div class="stat-warning">Urgent</div>
+          </div>
+        </div>
+
+        <!-- Low Stock Alert Banner -->
+        <div class="alert-banner">
+          <div class="alert-title">
+            <span>⚠️</span>
+            <span
+              ><strong>Low Stock Alert</strong> - 5 products are running
+              low</span
+            >
+          </div>
+          <div>
+            <span class="alert-count">2 need immediate attention</span>
+          </div>
+        </div>
+
+        <!-- Search and Actions -->
+        <div class="search-bar">
+          <input
+            type="text"
+            class="search-input"
+            placeholder="Search products..."
+            id="searchInput"
+            onkeyup="searchInventory()"
+          />
+          <select
+            class="filter-select"
+            id="stockFilter"
+            onchange="filterInventory()"
+          >
+            <option value="all">All Products</option>
+            <option value="low">Low Stock</option>
+            <option value="out">Out of Stock</option>
+            <option value="instock">In Stock</option>
+          </select>
+          <button class="update-all-btn" onclick="updateAllStock()">
+            Update All
+          </button>
+        </div>
+
+        <!-- Inventory Table -->
+        <div class="inventory-table">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Size</th>
+                <th>Current Stock</th>
+                <th>Low Stock Threshold</th>
+                <th>Status</th>
+                <th>Last Updated</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="inventory-table-body">
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=MO"
+                      class="product-image-small"
+                    />
+                    <span>Midnight Oud</span>
+                  </div>
+                </td>
+                <td>Designer</td>
+                <td>100ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="23"
+                    min="0"
+                    id="stock-1"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="5"
+                    min="0"
+                    id="threshold-1"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-instock">In Stock</span>
+                </td>
+                <td>2024-02-15</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(1)">
+                    Update
+                  </button>
+                  <button class="update-btn" onclick="viewHistory(1)">
+                    History
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=RN"
+                      class="product-image-small"
+                    />
+                    <span>Rose Noir</span>
+                  </div>
+                </td>
+                <td>Oil Perfume</td>
+                <td>30ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="2"
+                    min="0"
+                    id="stock-2"
+                    style="border-color: #f44336"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="5"
+                    min="0"
+                    id="threshold-2"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-lowstock">Low Stock</span>
+                </td>
+                <td>2024-02-14</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(2)">
+                    Update
+                  </button>
+                  <button class="update-btn" onclick="viewHistory(2)">
+                    History
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=CB"
+                      class="product-image-small"
+                    />
+                    <span>Citrus Bliss</span>
+                  </div>
+                </td>
+                <td>Oil Perfume</td>
+                <td>30ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="0"
+                    min="0"
+                    id="stock-3"
+                    style="border-color: #f44336"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="3"
+                    min="0"
+                    id="threshold-3"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-outofstock"
+                    >Out of Stock</span
+                  >
+                </td>
+                <td>2024-02-10</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(3)">
+                    Update
+                  </button>
+                  <button class="update-btn" onclick="viewHistory(3)">
+                    History
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=AM"
+                      class="product-image-small"
+                    />
+                    <span>Amber Mystique</span>
+                  </div>
+                </td>
+                <td>Designer</td>
+                <td>100ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="8"
+                    min="0"
+                    id="stock-4"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="5"
+                    min="0"
+                    id="threshold-4"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-instock">In Stock</span>
+                </td>
+                <td>2024-02-13</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(4)">
+                    Update
+                  </button>
+                  <button class="update-btn" onclick="viewHistory(4)">
+                    History
+                  </button>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="product-info">
+                    <img
+                      src="https://via.placeholder.com/40x40/000000/ffffff?text=WE"
+                      class="product-image-small"
+                    />
+                    <span>Woody Elegance</span>
+                  </div>
+                </td>
+                <td>Designer</td>
+                <td>50ml</td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="3"
+                    min="0"
+                    id="stock-5"
+                    style="border-color: #f44336"
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    class="stock-input"
+                    value="5"
+                    min="0"
+                    id="threshold-5"
+                  />
+                </td>
+                <td>
+                  <span class="stock-status status-lowstock">Low Stock</span>
+                </td>
+                <td>2024-02-12</td>
+                <td>
+                  <button class="update-btn" onclick="updateStock(5)">
+                    Update
+                  </button>
+                  <button class="update-btn" onclick="viewHistory(5)">
+                    History
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+
+    <!-- Stock History Modal -->
+    <div class="modal" id="history-modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 id="history-product-name">Stock History - Midnight Oud</h2>
+          <button class="modal-close" onclick="closeHistoryModal()">
+            &times;
+          </button>
+        </div>
+
+        <div class="history-list" id="history-list">
+          <div class="history-item">
+            <div>
+              <div>Manual update</div>
+              <div class="history-date">2024-02-15 10:30 AM</div>
+            </div>
+            <div class="history-change positive">+20 units</div>
+          </div>
+          <div class="history-item">
+            <div>
+              <div>Sale - Order #SC-2024-001</div>
+              <div class="history-date">2024-02-14 03:15 PM</div>
+            </div>
+            <div class="history-change negative">-1 unit</div>
+          </div>
+          <div class="history-item">
+            <div>
+              <div>Sale - Order #SC-2024-003</div>
+              <div class="history-date">2024-02-13 11:20 AM</div>
+            </div>
+            <div class="history-change negative">-2 units</div>
+          </div>
+          <div class="history-item">
+            <div>
+              <div>Initial stock</div>
+              <div class="history-date">2024-01-01</div>
+            </div>
+            <div class="history-change positive">+50 units</div>
+          </div>
+        </div>
+
+        <div style="margin-top: 2rem">
+          <button class="btn" style="width: 100%" onclick="exportHistory()">
+            Export History
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        // Check if user is superadmin
+        if (
+          !Scentbysally.isAuthenticated ||
+          Scentbysally.userRole !== "superadmin"
+        ) {
+          window.location.href = "../login.html";
+          return;
+        }
+      });
+
+      // Logout function
+      function logout() {
+        event.preventDefault();
+        localStorage.removeItem("scentbysally_user");
+        window.location.href = "../index.html";
+      }
+
+      // Search inventory
+      function searchInventory() {
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const rows = document.querySelectorAll("#inventory-table-body tr");
+
+        rows.forEach((row) => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = text.includes(searchTerm) ? "" : "none";
+        });
+      }
+
+      // Filter inventory by stock status
+      function filterInventory() {
+        const filter = document.getElementById("stockFilter").value;
+        const rows = document.querySelectorAll("#inventory-table-body tr");
+
+        rows.forEach((row) => {
+          const statusCell = row.querySelector(".stock-status");
+          if (!statusCell) return;
+
+          const status = statusCell.textContent.toLowerCase();
+
+          if (filter === "all") {
+            row.style.display = "";
+          } else if (filter === "low" && status === "low stock") {
+            row.style.display = "";
+          } else if (filter === "out" && status === "out of stock") {
+            row.style.display = "";
+          } else if (filter === "instock" && status === "in stock") {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      }
+
+      // Update individual stock
+      function updateStock(productId) {
+        const stockInput = document.getElementById(`stock-${productId}`);
+        const thresholdInput = document.getElementById(
+          `threshold-${productId}`,
+        );
+
+        const newStock = stockInput.value;
+        const newThreshold = thresholdInput.value;
+
+        console.log(
+          `Updating product ${productId}: Stock=${newStock}, Threshold=${newThreshold}`,
+        );
+
+        // Update status based on new stock
+        const row = stockInput.closest("tr");
+        const statusCell = row.querySelector(".stock-status");
+
+        if (newStock == 0) {
+          statusCell.className = "stock-status status-outofstock";
+          statusCell.textContent = "Out of Stock";
+        } else if (newStock <= newThreshold) {
+          statusCell.className = "stock-status status-lowstock";
+          statusCell.textContent = "Low Stock";
+        } else {
+          statusCell.className = "stock-status status-instock";
+          statusCell.textContent = "In Stock";
+        }
+
+        showNotification("Stock updated successfully", "success");
+      }
+
+      // Update all stock
+      function updateAllStock() {
+        const rows = document.querySelectorAll("#inventory-table-body tr");
+        let updated = 0;
+
+        rows.forEach((row) => {
+          if (row.style.display !== "none") {
+            const stockInput = row.querySelector(".stock-input");
+            if (stockInput) {
+              updated++;
+            }
+          }
+        });
+
+        showNotification(`${updated} products updated`, "success");
+      }
+
+      // View stock history
+      function viewHistory(productId) {
+        const productName = event.target
+          .closest("tr")
+          .querySelector(".product-info span").textContent;
+        document.getElementById("history-product-name").textContent =
+          `Stock History - ${productName}`;
+        document.getElementById("history-modal").classList.add("active");
+      }
+
+      function closeHistoryModal() {
+        document.getElementById("history-modal").classList.remove("active");
+      }
+
+      function exportHistory() {
+        showNotification("History exported successfully", "success");
+        closeHistoryModal();
+      }
+
+      // Export inventory report
+      function exportInventory() {
+        showNotification(
+          "Inventory report generated and downloaded",
+          "success",
+        );
+      }
+    </script>
+  </body>
+</html>

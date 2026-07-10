@@ -1,0 +1,494 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - My Wishlist</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .wishlist-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 3rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .wishlist-title {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+      }
+
+      .wishlist-container {
+        max-width: 1200px;
+        margin: 3rem auto;
+        padding: 0 5%;
+      }
+
+      .wishlist-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 2rem;
+      }
+
+      .wishlist-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .wishlist-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px -15px var(--glow-color);
+      }
+
+      .wishlist-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .wishlist-info {
+        padding: 1.5rem;
+      }
+
+      .wishlist-name {
+        font-size: 1.2rem;
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .wishlist-category {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .wishlist-price {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .wishlist-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .add-to-cart-btn {
+        flex: 2;
+        padding: 0.8rem;
+        background: var(--white);
+        color: var(--black);
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .add-to-cart-btn:hover {
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .remove-btn {
+        flex: 1;
+        padding: 0.8rem;
+        background: none;
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .remove-btn:hover {
+        border-color: var(--white);
+        color: var(--white);
+      }
+
+      .empty-wishlist {
+        text-align: center;
+        padding: 4rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        grid-column: 1 / -1;
+      }
+
+      .empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+      }
+
+      .share-wishlist {
+        margin-top: 3rem;
+        text-align: center;
+        padding: 2rem;
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+      }
+
+      .share-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .share-btn {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        border: 1px solid var(--gray-dark);
+        background: none;
+        color: var(--white);
+        font-size: 1.2rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .share-btn:hover {
+        border-color: var(--white);
+        transform: scale(1.1);
+      }
+
+      @media (max-width: 768px) {
+        .wishlist-grid {
+          grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+
+        .share-buttons {
+          flex-wrap: wrap;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Wishlist Header -->
+    <div class="wishlist-header">
+      <h1 class="wishlist-title glow-text">My Wishlist</h1>
+      <p style="color: var(--gray-light)">Your saved fragrances</p>
+    </div>
+
+    <!-- Wishlist Container -->
+    <div class="wishlist-container">
+      <div class="wishlist-grid" id="wishlist-grid">
+        <!-- Wishlist Item 1 -->
+        <div class="wishlist-card floating-card" data-id="1">
+          <img
+            src="https://via.placeholder.com/300x300/000000/ffffff?text=Midnight+Oud"
+            alt="Midnight Oud"
+            class="wishlist-image"
+          />
+          <div class="wishlist-info">
+            <h3 class="wishlist-name">Midnight Oud</h3>
+            <p class="wishlist-category">Designer</p>
+            <div class="wishlist-price">₦45,000</div>
+            <div class="wishlist-actions">
+              <button
+                class="add-to-cart-btn"
+                onclick="addToCartFromWishlist(1)"
+              >
+                Add to Cart
+              </button>
+              <button class="remove-btn" onclick="removeFromWishlist(1)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist Item 2 -->
+        <div class="wishlist-card floating-card" data-id="2">
+          <img
+            src="https://via.placeholder.com/300x300/000000/ffffff?text=Rose+Noir"
+            alt="Rose Noir"
+            class="wishlist-image"
+          />
+          <div class="wishlist-info">
+            <h3 class="wishlist-name">Rose Noir</h3>
+            <p class="wishlist-category">Oil Perfume</p>
+            <div class="wishlist-price">₦38,000</div>
+            <div class="wishlist-actions">
+              <button
+                class="add-to-cart-btn"
+                onclick="addToCartFromWishlist(2)"
+              >
+                Add to Cart
+              </button>
+              <button class="remove-btn" onclick="removeFromWishlist(2)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist Item 3 -->
+        <div class="wishlist-card floating-card" data-id="3">
+          <img
+            src="https://via.placeholder.com/300x300/000000/ffffff?text=Amber+Mystique"
+            alt="Amber Mystique"
+            class="wishlist-image"
+          />
+          <div class="wishlist-info">
+            <h3 class="wishlist-name">Amber Mystique</h3>
+            <p class="wishlist-category">Designer</p>
+            <div class="wishlist-price">₦52,000</div>
+            <div class="wishlist-actions">
+              <button
+                class="add-to-cart-btn"
+                onclick="addToCartFromWishlist(3)"
+              >
+                Add to Cart
+              </button>
+              <button class="remove-btn" onclick="removeFromWishlist(3)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist Item 4 -->
+        <div class="wishlist-card floating-card" data-id="4">
+          <img
+            src="https://via.placeholder.com/300x300/000000/ffffff?text=Woody+Elegance"
+            alt="Woody Elegance"
+            class="wishlist-image"
+          />
+          <div class="wishlist-info">
+            <h3 class="wishlist-name">Woody Elegance</h3>
+            <p class="wishlist-category">Designer</p>
+            <div class="wishlist-price">₦48,000</div>
+            <div class="wishlist-actions">
+              <button
+                class="add-to-cart-btn"
+                onclick="addToCartFromWishlist(4)"
+              >
+                Add to Cart
+              </button>
+              <button class="remove-btn" onclick="removeFromWishlist(4)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Wishlist Item 5 -->
+        <div class="wishlist-card floating-card" data-id="5">
+          <img
+            src="https://via.placeholder.com/300x300/000000/ffffff?text=Citrus+Bliss"
+            alt="Citrus Bliss"
+            class="wishlist-image"
+          />
+          <div class="wishlist-info">
+            <h3 class="wishlist-name">Citrus Bliss</h3>
+            <p class="wishlist-category">Oil Perfume</p>
+            <div class="wishlist-price">₦32,000</div>
+            <div class="wishlist-actions">
+              <button
+                class="add-to-cart-btn"
+                onclick="addToCartFromWishlist(5)"
+              >
+                Add to Cart
+              </button>
+              <button class="remove-btn" onclick="removeFromWishlist(5)">
+                ✕
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div id="empty-wishlist" class="empty-wishlist" style="display: none">
+          <div class="empty-icon">❤️</div>
+          <h2 style="margin-bottom: 1rem">Your wishlist is empty</h2>
+          <p style="color: var(--gray-light); margin-bottom: 2rem">
+            Save items you love to your wishlist
+          </p>
+          <a href="products.html" class="btn">Explore Products</a>
+        </div>
+      </div>
+
+      <!-- Share Wishlist -->
+      <div class="share-wishlist floating-card">
+        <h3>Share Your Wishlist</h3>
+        <p style="color: var(--gray-light); margin-top: 0.5rem">
+          Let friends and family know what you'd love
+        </p>
+        <div class="share-buttons">
+          <button class="share-btn" onclick="shareWishlist('whatsapp')">
+            📱
+          </button>
+          <button class="share-btn" onclick="shareWishlist('facebook')">
+            📘
+          </button>
+          <button class="share-btn" onclick="shareWishlist('twitter')">
+            🐦
+          </button>
+          <button class="share-btn" onclick="shareWishlist('email')">📧</button>
+          <button class="share-btn" onclick="copyWishlistLink()">🔗</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+
+        // Check if user is authenticated
+        if (!Scentbysally.isAuthenticated) {
+          window.location.href = "../login.html";
+          return;
+        }
+
+        // Load wishlist items (in real app, would fetch from backend)
+        checkEmptyWishlist();
+      });
+
+      // Check if wishlist is empty
+      function checkEmptyWishlist() {
+        const items = document.querySelectorAll(".wishlist-card");
+        const emptyState = document.getElementById("empty-wishlist");
+
+        if (items.length === 0) {
+          emptyState.style.display = "block";
+        } else {
+          emptyState.style.display = "none";
+        }
+      }
+
+      // Add to cart from wishlist
+      function addToCartFromWishlist(productId) {
+        // In real app, would fetch product details
+        const product = {
+          id: productId,
+          name: event.target
+            .closest(".wishlist-card")
+            .querySelector(".wishlist-name").textContent,
+          price: parseInt(
+            event.target
+              .closest(".wishlist-card")
+              .querySelector(".wishlist-price")
+              .textContent.replace("₦", "")
+              .replace(",", ""),
+          ),
+          image: event.target.closest(".wishlist-card").querySelector("img")
+            .src,
+        };
+
+        addToCart(product, "100ml", 1);
+        showNotification("Added to cart", "success");
+      }
+
+      // Remove from wishlist
+      function removeFromWishlist(productId) {
+        const card = event.target.closest(".wishlist-card");
+        card.style.animation = "fadeOut 0.3s ease";
+
+        setTimeout(() => {
+          card.remove();
+          showNotification("Removed from wishlist", "success");
+          checkEmptyWishlist();
+        }, 300);
+      }
+
+      // Share wishlist functions
+      function shareWishlist(platform) {
+        const wishlistUrl = window.location.href;
+        const message = "Check out my Scentbysally wishlist!";
+
+        let shareUrl = "";
+
+        switch (platform) {
+          case "whatsapp":
+            shareUrl = `https://wa.me/?text=${encodeURIComponent(message + " " + wishlistUrl)}`;
+            break;
+          case "facebook":
+            shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(wishlistUrl)}`;
+            break;
+          case "twitter":
+            shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(message)}&url=${encodeURIComponent(wishlistUrl)}`;
+            break;
+          case "email":
+            shareUrl = `mailto:?subject=${encodeURIComponent("My Scentbysally Wishlist")}&body=${encodeURIComponent(message + "\n\n" + wishlistUrl)}`;
+            break;
+        }
+
+        if (shareUrl) {
+          window.open(shareUrl, "_blank");
+        }
+      }
+
+      function copyWishlistLink() {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+          showNotification("Link copied to clipboard!", "success");
+        });
+      }
+
+      // Add fadeOut animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,834 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Build Your Box</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .builder-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 3rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .builder-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .builder-subtitle {
+        color: var(--gray-light);
+        font-size: 1.2rem;
+        max-width: 600px;
+        margin: 0 auto;
+      }
+
+      .builder-container {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Product Selection */
+      .selection-area {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 2rem;
+      }
+
+      .selection-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .selection-title {
+        font-size: 1.5rem;
+      }
+
+      .selected-count {
+        color: var(--gray-light);
+        font-size: 1.1rem;
+      }
+
+      .category-tabs {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 1px solid var(--white-transparent);
+        padding-bottom: 1rem;
+      }
+
+      .category-tab {
+        padding: 0.5rem 1.5rem;
+        cursor: pointer;
+        color: var(--gray-light);
+        transition: all 0.3s ease;
+      }
+
+      .category-tab:hover {
+        color: var(--white);
+      }
+
+      .category-tab.active {
+        color: var(--white);
+        border-bottom: 2px solid var(--white);
+      }
+
+      .products-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1.5rem;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 1rem;
+      }
+
+      .selectable-product {
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 12px;
+        padding: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .selectable-product:hover {
+        border-color: var(--white);
+        transform: translateY(-5px);
+      }
+
+      .selectable-product.selected {
+        border-color: var(--white);
+        box-shadow: 0 0 20px var(--glow-color);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      .selectable-product.selected .product-category,
+      .selectable-product.selected .product-price {
+        color: var(--black);
+      }
+
+      .product-image-small {
+        width: 100%;
+        height: 150px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+      }
+
+      .product-name-small {
+        font-weight: 600;
+        margin-bottom: 0.3rem;
+      }
+
+      .product-category-small {
+        font-size: 0.8rem;
+        color: var(--gray-light);
+        margin-bottom: 0.5rem;
+      }
+
+      .product-price-small {
+        font-weight: 600;
+        color: var(--white);
+      }
+
+      .selectable-product.selected .product-price-small {
+        color: var(--black);
+      }
+
+      /* Size selector for each product */
+      /* Black curved dropdown selectors - Updated */
+      .size-selector-small {
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px; /* Curved edges */
+        color: var(--white);
+        width: 100%;
+        cursor: pointer;
+        font-size: 0.9rem;
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        transition: all 0.3s ease;
+      }
+
+      .size-selector-small:hover {
+        border-color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+      }
+
+      /* Style for the dropdown panel (the box that appears when clicked) */
+      .size-selector-small:focus {
+        outline: none;
+        border-color: var(--white);
+        box-shadow: 0 0 15px var(--glow-color);
+        background: var(--white);
+        color: var(--black);
+      }
+
+      /* Keep the arrow white even when focused */
+      .size-selector-small:focus {
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px;
+        background-color: var(--white);
+      }
+
+      /* Style for the dropdown options container */
+      .size-selector-small option {
+        background: var(--black);
+        color: var(--white);
+        padding: 12px;
+        font-size: 0.9rem;
+      }
+
+      /* Box Preview */
+      .box-preview {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        padding: 1.5rem;
+        position: sticky;
+        top: 100px;
+      }
+
+      .preview-title {
+        font-size: 1.3rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .selected-items {
+        max-height: 400px;
+        overflow-y: auto;
+        margin-bottom: 1.5rem;
+      }
+
+      .selected-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .selected-item-info {
+        flex: 1;
+      }
+
+      .selected-item-name {
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+
+      .selected-item-details {
+        font-size: 0.9rem;
+        color: var(--gray-light);
+      }
+
+      .selected-item-price {
+        font-weight: 600;
+        margin-right: 1rem;
+      }
+
+      .remove-item {
+        background: none;
+        border: none;
+        color: var(--gray-light);
+        font-size: 1.2rem;
+        cursor: pointer;
+      }
+
+      .remove-item:hover {
+        color: var(--white);
+      }
+
+      .box-summary {
+        border-top: 1px solid var(--white-transparent);
+        padding-top: 1.5rem;
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.8rem;
+      }
+
+      .total-row {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      .box-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-top: 1.5rem;
+      }
+
+      .minimum-warning {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+        text-align: center;
+        margin-top: 1rem;
+      }
+
+      /* 3D Preview */
+      .preview-3d {
+        height: 200px;
+        background: var(--black);
+        border-radius: 10px;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+      }
+
+      #box-canvas {
+        width: 100%;
+        height: 100%;
+      }
+
+      @media (max-width: 968px) {
+        .builder-container {
+          grid-template-columns: 1fr;
+        }
+
+        .box-preview {
+          position: static;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="builder-header">
+      <h1 class="builder-title glow-text">Build Your Custom Box</h1>
+      <p class="builder-subtitle">
+        Choose any 2 or more perfumes from our collection to create your perfect
+        set
+      </p>
+    </div>
+
+    <!-- Builder Container -->
+    <div class="builder-container">
+      <!-- Product Selection Area -->
+      <div class="selection-area floating-card">
+        <div class="selection-header">
+          <h2 class="selection-title">Select Perfumes</h2>
+          <span class="selected-count" id="selected-count"
+            >0 items selected</span
+          >
+        </div>
+
+        <!-- Category Tabs -->
+        <div class="category-tabs">
+          <div class="category-tab active" onclick="filterCategory('all')">
+            All
+          </div>
+          <div class="category-tab" onclick="filterCategory('designer')">
+            Designer
+          </div>
+          <div class="category-tab" onclick="filterCategory('oil')">
+            Oil Perfume
+          </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="products-grid">
+          <!-- Product 1 -->
+          <div
+            class="selectable-product"
+            data-category="designer"
+            data-id="1"
+            data-name="Midnight Oud"
+            data-price="45000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Midnight+Oud"
+              alt="Midnight Oud"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Midnight Oud</h3>
+            <p class="product-category-small">Designer</p>
+            <p class="product-price-small">₦45,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 1)"
+            >
+              <option value="100ml" data-price="45000">100ml - ₦45,000</option>
+              <option value="50ml" data-price="32000">50ml - ₦32,000</option>
+              <option value="30ml" data-price="21000">30ml - ₦21,000</option>
+            </select>
+          </div>
+
+          <!-- Product 2 -->
+          <div
+            class="selectable-product"
+            data-category="oil"
+            data-id="2"
+            data-name="Rose Noir"
+            data-price="38000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Rose+Noir"
+              alt="Rose Noir"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Rose Noir</h3>
+            <p class="product-category-small">Oil Perfume</p>
+            <p class="product-price-small">₦38,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 2)"
+            >
+              <option value="30ml" data-price="38000">30ml - ₦38,000</option>
+              <option value="20ml" data-price="28000">20ml - ₦28,000</option>
+              <option value="10ml" data-price="18000">10ml - ₦18,000</option>
+            </select>
+          </div>
+
+          <!-- Product 3 -->
+          <div
+            class="selectable-product"
+            data-category="designer"
+            data-id="3"
+            data-name="Amber Mystique"
+            data-price="52000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Amber+Mystique"
+              alt="Amber Mystique"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Amber Mystique</h3>
+            <p class="product-category-small">Designer</p>
+            <p class="product-price-small">₦52,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 3)"
+            >
+              <option value="100ml" data-price="52000">100ml - ₦52,000</option>
+              <option value="50ml" data-price="38000">50ml - ₦38,000</option>
+              <option value="30ml" data-price="25000">30ml - ₦25,000</option>
+            </select>
+          </div>
+
+          <!-- Product 4 -->
+          <div
+            class="selectable-product"
+            data-category="oil"
+            data-id="4"
+            data-name="Citrus Bliss"
+            data-price="32000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Citrus+Bliss"
+              alt="Citrus Bliss"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Citrus Bliss</h3>
+            <p class="product-category-small">Oil Perfume</p>
+            <p class="product-price-small">₦32,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 4)"
+            >
+              <option value="30ml" data-price="32000">30ml - ₦32,000</option>
+              <option value="20ml" data-price="24000">20ml - ₦24,000</option>
+              <option value="10ml" data-price="15000">10ml - ₦15,000</option>
+            </select>
+          </div>
+
+          <!-- Product 5 -->
+          <div
+            class="selectable-product"
+            data-category="designer"
+            data-id="5"
+            data-name="Woody Elegance"
+            data-price="48000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Woody+Elegance"
+              alt="Woody Elegance"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Woody Elegance</h3>
+            <p class="product-category-small">Designer</p>
+            <p class="product-price-small">₦48,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 5)"
+            >
+              <option value="100ml" data-price="48000">100ml - ₦48,000</option>
+              <option value="50ml" data-price="35000">50ml - ₦35,000</option>
+              <option value="30ml" data-price="22000">30ml - ₦22,000</option>
+            </select>
+          </div>
+
+          <!-- Product 6 -->
+          <div
+            class="selectable-product"
+            data-category="oil"
+            data-id="6"
+            data-name="Oriental Spice"
+            data-price="42000"
+            onclick="toggleProduct(this)"
+          >
+            <img
+              src="https://via.placeholder.com/200x200/000000/ffffff?text=Oriental+Spice"
+              alt="Oriental Spice"
+              class="product-image-small"
+            />
+            <h3 class="product-name-small">Oriental Spice</h3>
+            <p class="product-category-small">Oil Perfume</p>
+            <p class="product-price-small">₦42,000</p>
+            <select
+              class="size-selector-small"
+              onclick="event.stopPropagation()"
+              onchange="updateProductSize(this, 6)"
+            >
+              <option value="30ml" data-price="42000">30ml - ₦42,000</option>
+              <option value="20ml" data-price="32000">20ml - ₦32,000</option>
+              <option value="10ml" data-price="20000">10ml - ₦20,000</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Box Preview -->
+      <div class="box-preview floating-card">
+        <!-- 3D Preview (simplified) -->
+        <div class="preview-3d">
+          <canvas id="box-canvas"></canvas>
+        </div>
+
+        <h3 class="preview-title">Your Box</h3>
+
+        <!-- Selected Items -->
+        <div class="selected-items" id="selected-items">
+          <!-- Items will be added here dynamically -->
+          <div
+            style="text-align: center; color: var(--gray-light); padding: 2rem"
+          >
+            Select perfumes to build your box
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="box-summary">
+          <div class="summary-row">
+            <span>Items:</span>
+            <span id="item-count">0</span>
+          </div>
+          <div class="summary-row">
+            <span>Subtotal:</span>
+            <span id="subtotal">₦0</span>
+          </div>
+          <div class="total-row">
+            <span>Total:</span>
+            <span id="total">₦0</span>
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="box-actions">
+          <button
+            class="btn"
+            id="request-quote-btn"
+            onclick="requestQuote()"
+            disabled
+          >
+            Request Price Quote
+          </button>
+          <button class="btn btn-outline" onclick="clearBox()">
+            Clear Box
+          </button>
+        </div>
+
+        <div class="minimum-warning" id="minimum-warning">
+          Minimum 2 items required
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/3d.js"></script>
+    <script>
+      // Box builder state
+      let selectedProducts = [];
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+        updateBoxPreview();
+
+        // Initialize 3D box preview (simplified)
+        if (typeof initBoxPreview === "function") {
+          initBoxPreview("box-canvas");
+        }
+      });
+
+      // Toggle product selection
+      function toggleProduct(element) {
+        const productId = element.dataset.id;
+        const index = selectedProducts.findIndex((p) => p.id === productId);
+
+        if (index === -1) {
+          // Add product
+          const sizeSelect = element.querySelector("select");
+          const selectedOption = sizeSelect.options[sizeSelect.selectedIndex];
+
+          selectedProducts.push({
+            id: productId,
+            name: element.dataset.name,
+            category: element.dataset.category,
+            size: sizeSelect.value,
+            price: parseInt(selectedOption.dataset.price),
+            element: element,
+          });
+
+          element.classList.add("selected");
+        } else {
+          // Remove product
+          selectedProducts.splice(index, 1);
+          element.classList.remove("selected");
+        }
+
+        updateBoxPreview();
+      }
+
+      // Update product size
+      function updateProductSize(select, productId) {
+        const product = selectedProducts.find((p) => p.id == productId);
+        if (product) {
+          const selectedOption = select.options[select.selectedIndex];
+          product.size = select.value;
+          product.price = parseInt(selectedOption.dataset.price);
+          updateBoxPreview();
+        }
+      }
+
+      // Update box preview
+      function updateBoxPreview() {
+        const container = document.getElementById("selected-items");
+        const countSpan = document.getElementById("selected-count");
+        const itemCountSpan = document.getElementById("item-count");
+        const subtotalSpan = document.getElementById("subtotal");
+        const totalSpan = document.getElementById("total");
+        const quoteBtn = document.getElementById("request-quote-btn");
+        const warning = document.getElementById("minimum-warning");
+
+        // Update count
+        countSpan.textContent = `${selectedProducts.length} items selected`;
+        itemCountSpan.textContent = selectedProducts.length;
+
+        // Calculate subtotal
+        let subtotal = 0;
+        selectedProducts.forEach((p) => {
+          subtotal += p.price;
+        });
+
+        subtotalSpan.textContent = `₦${subtotal.toLocaleString()}`;
+        totalSpan.textContent = `₦${subtotal.toLocaleString()}`; // No delivery yet
+
+        // Enable/disable quote button based on minimum items
+        if (selectedProducts.length >= 2) {
+          quoteBtn.disabled = false;
+          warning.style.color = "var(--gray-light)";
+          warning.textContent = "Ready to request quote";
+        } else {
+          quoteBtn.disabled = true;
+          warning.style.color = "var(--gray-dark)";
+          warning.textContent = `Need ${2 - selectedProducts.length} more item${2 - selectedProducts.length > 1 ? "s" : ""}`;
+        }
+
+        // Render selected items
+        if (selectedProducts.length === 0) {
+          container.innerHTML =
+            '<div style="text-align: center; color: var(--gray-light); padding: 2rem;">Select perfumes to build your box</div>';
+          return;
+        }
+
+        let html = "";
+        selectedProducts.forEach((product, index) => {
+          html += `
+                    <div class="selected-item">
+                        <div class="selected-item-info">
+                            <div class="selected-item-name">${product.name}</div>
+                            <div class="selected-item-details">${product.size} • ₦${product.price.toLocaleString()}</div>
+                        </div>
+                        <div class="selected-item-price">₦${product.price.toLocaleString()}</div>
+                        <button class="remove-item" onclick="removeProduct(${index})">×</button>
+                    </div>
+                `;
+        });
+
+        container.innerHTML = html;
+      }
+
+      // Remove product from box
+      function removeProduct(index) {
+        const product = selectedProducts[index];
+        if (product && product.element) {
+          product.element.classList.remove("selected");
+        }
+        selectedProducts.splice(index, 1);
+        updateBoxPreview();
+      }
+
+      // Clear entire box
+      function clearBox() {
+        selectedProducts.forEach((product) => {
+          if (product.element) {
+            product.element.classList.remove("selected");
+          }
+        });
+        selectedProducts = [];
+        updateBoxPreview();
+      }
+
+      // Filter by category
+      function filterCategory(category) {
+        // Update tabs
+        document.querySelectorAll(".category-tab").forEach((tab) => {
+          tab.classList.remove("active");
+        });
+        event.target.classList.add("active");
+
+        // Filter products
+        const products = document.querySelectorAll(".selectable-product");
+        products.forEach((product) => {
+          if (category === "all" || product.dataset.category === category) {
+            product.style.display = "block";
+          } else {
+            product.style.display = "none";
+          }
+        });
+      }
+
+      // Request quote
+      function requestQuote() {
+        if (!Scentbysally.isAuthenticated) {
+          showNotification("Please login to request a quote", "error");
+          window.location.href = "../login.html";
+          return;
+        }
+
+        if (selectedProducts.length < 2) {
+          showNotification("Please select at least 2 items", "error");
+          return;
+        }
+
+        // Here you would send to backend
+        console.log("Quote requested:", selectedProducts);
+
+        showNotification(
+          "Quote request sent! You will be notified when priced.",
+          "success",
+        );
+
+        // Clear box after request
+        clearBox();
+      }
+
+      // Simple 3D box preview (placeholder)
+      function initBoxPreview(canvasId) {
+        const canvas = document.getElementById(canvasId);
+        if (!canvas) return;
+
+        // Simple black rectangle as placeholder
+        const ctx = canvas.getContext("2d");
+        ctx.fillStyle = "#111";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        // Draw some boxes
+        ctx.fillStyle = "#333";
+        ctx.fillRect(20, 50, 80, 80);
+        ctx.fillRect(120, 30, 80, 80);
+        ctx.fillRect(220, 60, 80, 80);
+
+        // Add glow effect
+        ctx.shadowColor = "rgba(255,255,255,0.5)";
+        ctx.shadowBlur = 10;
+        ctx.strokeStyle = "#fff";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(20, 50, 80, 80);
+        ctx.strokeRect(120, 30, 80, 80);
+        ctx.strokeRect(220, 60, 80, 80);
+      }
+    </script>
+  </body>
+</html>

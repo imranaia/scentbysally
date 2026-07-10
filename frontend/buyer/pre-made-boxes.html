@@ -1,0 +1,496 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Pre-made Boxes</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .boxes-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 3rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .boxes-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .boxes-subtitle {
+        color: var(--gray-light);
+        font-size: 1.2rem;
+      }
+
+      .boxes-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2rem;
+        padding: 3rem 5%;
+      }
+
+      .box-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+      }
+
+      .box-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px -15px var(--glow-color);
+      }
+
+      .box-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--white);
+        color: var(--black);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-weight: 600;
+        z-index: 10;
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .box-image {
+        width: 100%;
+        height: 250px;
+        background: linear-gradient(145deg, #222, #111);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .box-image::before {
+        content: "";
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(
+          circle,
+          rgba(255, 255, 255, 0.1) 0%,
+          transparent 70%
+        );
+        animation: rotate 20s linear infinite;
+      }
+
+      .box-image-content {
+        display: flex;
+        gap: 0.5rem;
+        z-index: 1;
+      }
+
+      .box-mini-bottle {
+        width: 60px;
+        height: 120px;
+        background: linear-gradient(to right, #444, #222);
+        border-radius: 30px 30px 10px 10px;
+        transform: rotate(5deg);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+      }
+
+      .box-mini-bottle:nth-child(2) {
+        transform: rotate(-5deg) translateY(-10px);
+        background: linear-gradient(to right, #555, #333);
+      }
+
+      .box-mini-bottle:nth-child(3) {
+        transform: rotate(0deg) translateY(-5px);
+        background: linear-gradient(to right, #666, #444);
+      }
+
+      .box-content {
+        padding: 2rem;
+      }
+
+      .box-name {
+        font-size: 1.8rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .box-description {
+        color: var(--gray-light);
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
+      }
+
+      .box-products {
+        margin-bottom: 1.5rem;
+      }
+
+      .box-product-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.8rem 0;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .box-product-item:last-child {
+        border-bottom: none;
+      }
+
+      .box-product-name {
+        font-weight: 500;
+      }
+
+      .box-product-size {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .box-product-price {
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      .box-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--white-transparent);
+      }
+
+      .box-total-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        text-shadow: 0 0 10px var(--glow-color);
+      }
+
+      .box-savings {
+        color: var(--gray-light);
+        font-size: 0.9rem;
+      }
+
+      .box-savings span {
+        color: var(--white);
+        font-weight: 600;
+      }
+
+      .size-selector-box {
+        width: 100%;
+        padding: 0.8rem;
+        margin: 1rem 0;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 15px;
+        color: var(--white);
+      }
+
+      @media (max-width: 768px) {
+        .boxes-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Header -->
+    <div class="boxes-header">
+      <h1 class="boxes-title glow-text">Curated Collections</h1>
+      <p class="boxes-subtitle">
+        Hand-picked boxes designed for every occasion
+      </p>
+    </div>
+
+    <!-- Boxes Grid -->
+    <div class="boxes-grid">
+      <!-- Box of 2 -->
+      <div class="box-card floating-card">
+        <div class="box-badge">Best for Gifting</div>
+        <div class="box-image">
+          <div class="box-image-content">
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2 class="box-name">The Duet</h2>
+          <p class="box-description">
+            Two complementary fragrances perfect for couples or alternating
+            moods
+          </p>
+
+          <div class="box-products">
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">Midnight Oud</span>
+                <span class="box-product-size"> (50ml)</span>
+              </div>
+              <span class="box-product-price">₦32,000</span>
+            </div>
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">Rose Noir</span>
+                <span class="box-product-size"> (30ml)</span>
+              </div>
+              <span class="box-product-price">₦38,000</span>
+            </div>
+          </div>
+
+          <select class="size-selector-box" id="box2-size">
+            <option value="standard">Standard Size</option>
+            <option value="travel">Travel Size (-15%)</option>
+            <option value="deluxe">Deluxe Size (+20%)</option>
+          </select>
+
+          <div class="box-footer">
+            <div>
+              <div class="box-total-price">₦70,000</div>
+              <div class="box-savings">Save <span>₦5,000</span></div>
+            </div>
+            <button class="btn" onclick="addBoxToCart(1, 'The Duet', 70000)">
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Box of 3 -->
+      <div class="box-card floating-card">
+        <div class="box-badge">Most Popular</div>
+        <div class="box-image">
+          <div class="box-image-content">
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2 class="box-name">The Triptych</h2>
+          <p class="box-description">
+            Three signature scents for the complete fragrance wardrobe
+          </p>
+
+          <div class="box-products">
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">Amber Mystique</span>
+                <span class="box-product-size"> (50ml)</span>
+              </div>
+              <span class="box-product-price">₦38,000</span>
+            </div>
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">Woody Elegance</span>
+                <span class="box-product-size"> (50ml)</span>
+              </div>
+              <span class="box-product-price">₦35,000</span>
+            </div>
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">Citrus Bliss</span>
+                <span class="box-product-size"> (30ml)</span>
+              </div>
+              <span class="box-product-price">₦32,000</span>
+            </div>
+          </div>
+
+          <select class="size-selector-box" id="box3-size">
+            <option value="standard">Standard Size</option>
+            <option value="travel">Travel Size (-15%)</option>
+            <option value="deluxe">Deluxe Size (+20%)</option>
+          </select>
+
+          <div class="box-footer">
+            <div>
+              <div class="box-total-price">₦105,000</div>
+              <div class="box-savings">Save <span>₦12,000</span></div>
+            </div>
+            <button
+              class="btn"
+              onclick="addBoxToCart(2, 'The Triptych', 105000)"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Box of 6 -->
+      <div class="box-card floating-card">
+        <div class="box-badge">Best Value</div>
+        <div class="box-image">
+          <div class="box-image-content">
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+            <div class="box-mini-bottle"></div>
+          </div>
+        </div>
+        <div class="box-content">
+          <h2 class="box-name">The Collection</h2>
+          <p class="box-description">
+            The complete Scentbysally experience - all six signature fragrances
+          </p>
+
+          <div class="box-products">
+            <div class="box-product-item">
+              <div>
+                <span class="box-product-name">All 6 Scents</span>
+                <span class="box-product-size"> (30ml each)</span>
+              </div>
+              <span class="box-product-price">Complete Set</span>
+            </div>
+          </div>
+
+          <select class="size-selector-box" id="box6-size">
+            <option value="standard">Standard Set</option>
+            <option value="deluxe">Deluxe Set (+30% size)</option>
+          </select>
+
+          <div class="box-footer">
+            <div>
+              <div class="box-total-price">₦195,000</div>
+              <div class="box-savings">Save <span>₦35,000</span></div>
+            </div>
+            <button
+              class="btn"
+              onclick="addBoxToCart(3, 'The Collection', 195000)"
+            >
+              Add to Cart
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Benefits Section -->
+    <div style="padding: 4rem 5%; background: var(--black-lighter)">
+      <h2 style="text-align: center; font-size: 2rem; margin-bottom: 3rem">
+        Why Choose Our Boxes
+      </h2>
+      <div
+        style="
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 2rem;
+        "
+      >
+        <div
+          class="floating-card-light"
+          style="text-align: center; padding: 2rem"
+        >
+          <div style="font-size: 3rem; margin-bottom: 1rem">🎁</div>
+          <h3>Perfect for Gifting</h3>
+          <p style="color: var(--gray-light)">
+            Beautifully packaged and ready to give
+          </p>
+        </div>
+        <div
+          class="floating-card-light"
+          style="text-align: center; padding: 2rem"
+        >
+          <div style="font-size: 3rem; margin-bottom: 1rem">💰</div>
+          <h3>Save Up to 20%</h3>
+          <p style="color: var(--gray-light)">
+            Better value than buying individually
+          </p>
+        </div>
+        <div
+          class="floating-card-light"
+          style="text-align: center; padding: 2rem"
+        >
+          <div style="font-size: 3rem; margin-bottom: 1rem">✨</div>
+          <h3>Curated Selection</h3>
+          <p style="color: var(--gray-light)">
+            Expertly chosen complementary scents
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+      });
+
+      // Add box to cart
+      function addBoxToCart(boxId, boxName, basePrice) {
+        // Get size selection
+        let sizeSelect;
+        if (boxId === 1) sizeSelect = document.getElementById("box2-size");
+        else if (boxId === 2) sizeSelect = document.getElementById("box3-size");
+        else sizeSelect = document.getElementById("box6-size");
+
+        const size = sizeSelect.options[sizeSelect.selectedIndex].text;
+        let finalPrice = basePrice;
+
+        // Adjust price based on size
+        if (sizeSelect.value === "travel") finalPrice = basePrice * 0.85;
+        else if (sizeSelect.value === "deluxe") finalPrice = basePrice * 1.2;
+
+        const boxProduct = {
+          id: `box-${boxId}`,
+          name: boxName,
+          price: finalPrice,
+          image: "https://via.placeholder.com/300x400/000000/ffffff?text=Box",
+          isBox: true,
+        };
+
+        addToCart(boxProduct, size, 1);
+      }
+    </script>
+  </body>
+</html>

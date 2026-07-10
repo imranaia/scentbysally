@@ -1,0 +1,751 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Scentbysally - Shop Perfumes</title>
+    <link rel="icon" type="image/x-icon" href="../assets/favicon.ico" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <style>
+      /* Page-specific styles */
+      .products-header {
+        background: linear-gradient(
+          to bottom,
+          var(--black),
+          var(--black-lighter)
+        );
+        padding: 3rem 5%;
+        text-align: center;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .products-title {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+      }
+
+      .products-subtitle {
+        color: var(--gray-light);
+        font-size: 1.2rem;
+      }
+
+      .products-wrapper {
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 2rem;
+        padding: 2rem 5%;
+      }
+
+      /* Sidebar Filters */
+      .filters-sidebar {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 15px;
+        padding: 1.5rem;
+        height: fit-content;
+        position: sticky;
+        top: 100px;
+      }
+
+      .filter-section {
+        margin-bottom: 2rem;
+      }
+
+      .filter-title {
+        font-size: 1.1rem;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid var(--white-transparent);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      .filter-options {
+        display: flex;
+        flex-direction: column;
+        gap: 0.8rem;
+      }
+
+      .filter-option {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--gray-light);
+        cursor: pointer;
+      }
+
+      .filter-option input[type="checkbox"],
+      .filter-option input[type="radio"] {
+        accent-color: var(--white);
+        width: 16px;
+        height: 16px;
+      }
+
+      .filter-option:hover {
+        color: var(--white);
+      }
+
+      .price-range {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+
+      .price-inputs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        width: 100%;
+      }
+
+      .price-input {
+        width: 100%;
+        padding: 0.9rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+        box-sizing: border-box;
+      }
+
+      .filter-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      .filter-actions button {
+        flex: 1;
+        padding: 0.8rem;
+      }
+
+      /* Product section */
+      .products-section {
+        flex: 1;
+      }
+
+      .products-header-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+      }
+
+      .products-count {
+        color: var(--gray-light);
+      }
+
+      .products-sort {
+        padding: 0.5rem 1rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .product-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 2rem;
+      }
+
+      .product-card {
+        background: var(--black-lighter);
+        border: 1px solid var(--white-transparent);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: fadeIn 0.5s ease;
+        cursor: pointer;
+      }
+
+      .product-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px -15px var(--glow-color);
+      }
+
+      .product-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        border-bottom: 1px solid var(--white-transparent);
+      }
+
+      .product-info {
+        padding: 1.5rem;
+      }
+
+      .product-title {
+        font-size: 1.2rem;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+      }
+
+      .product-category {
+        color: var(--gray-light);
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 0.5rem;
+      }
+
+      .product-price {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+      }
+
+      .product-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .product-actions select {
+        flex: 2;
+        padding: 0.5rem;
+        background: var(--black);
+        border: 1px solid var(--gray-dark);
+        border-radius: 10px;
+        color: var(--white);
+      }
+
+      .product-actions button {
+        flex: 1;
+        padding: 0.5rem;
+        background: var(--white);
+        border-radius: 10px;
+        color: var(--black);
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+
+      .product-actions button:hover {
+        box-shadow: 0 0 20px var(--glow-color);
+      }
+
+      .no-products {
+        text-align: center;
+        padding: 3rem;
+        color: var(--gray-light);
+        grid-column: 1 / -1;
+      }
+
+      @media (max-width: 768px) {
+        .products-wrapper {
+          grid-template-columns: 1fr;
+        }
+
+        .filters-sidebar {
+          position: static;
+          margin-bottom: 1rem;
+        }
+
+        .products-header-bar {
+          flex-direction: column;
+          gap: 1rem;
+          align-items: flex-start;
+        }
+
+        .product-grid {
+          grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+      <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
+      <p class="logo-name">Scentbysally</p>
+      <div class="nav-links">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="products.html" class="nav-link">Shop</a>
+        <a href="pre-made-boxes.html" class="nav-link">Boxes</a>
+        <a href="box-builder.html" class="nav-link">Custom Box</a>
+        <a href="cart.html" class="nav-link">Cart (0)</a>
+        <a href="../login.html" class="nav-link">Login</a>
+      </div>
+    </nav>
+
+    <!-- Products Header -->
+    <div class="products-header">
+      <h1 class="products-title glow-text">Our Fragrances</h1>
+      <p class="products-subtitle">Discover your signature scent</p>
+    </div>
+
+    <!-- Products Content -->
+    <div class="products-wrapper">
+      <!-- Filters Sidebar -->
+      <aside class="filters-sidebar floating-card">
+        <h3 style="margin-bottom: 1.5rem">Filters</h3>
+
+        <!-- Categories -->
+        <div class="filter-section">
+          <h4 class="filter-title">Categories</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="designer"
+                onchange="applyFilters()"
+              />
+              Designer
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="oil"
+                onchange="applyFilters()"
+              />
+              Oil Perfume
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="niche"
+                onchange="applyFilters()"
+              />
+              Niche
+            </label>
+          </div>
+        </div>
+
+        <!-- Sizes -->
+        <div class="filter-section">
+          <h4 class="filter-title">Size</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="100ml"
+                onchange="applyFilters()"
+              />
+              100ml
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="50ml"
+                onchange="applyFilters()"
+              />
+              50ml
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="30ml"
+                onchange="applyFilters()"
+              />
+              30ml
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="20ml"
+                onchange="applyFilters()"
+              />
+              20ml
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="10ml"
+                onchange="applyFilters()"
+              />
+              10ml
+            </label>
+          </div>
+        </div>
+
+        <!-- Price Range -->
+        <div class="filter-section">
+          <h4 class="filter-title">Price Range</h4>
+          <div class="price-range">
+            <div class="price-inputs">
+              <input
+                type="number"
+                class="price-input"
+                id="min-price"
+                placeholder="Min"
+                min="0"
+                onchange="applyFilters()"
+              />
+              <input
+                type="number"
+                class="price-input"
+                id="max-price"
+                placeholder="Max"
+                min="0"
+                onchange="applyFilters()"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- Scent Notes -->
+        <div class="filter-section">
+          <h4 class="filter-title">Scent Notes</h4>
+          <div class="filter-options">
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="floral"
+                onchange="applyFilters()"
+              />
+              Floral
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="woody"
+                onchange="applyFilters()"
+              />
+              Woody
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="oriental"
+                onchange="applyFilters()"
+              />
+              Oriental
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="fresh"
+                onchange="applyFilters()"
+              />
+              Fresh
+            </label>
+            <label class="filter-option">
+              <input
+                type="checkbox"
+                class="filter-checkbox"
+                value="citrus"
+                onchange="applyFilters()"
+              />
+              Citrus
+            </label>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="filter-actions">
+          <button class="btn btn-outline" onclick="resetFilters()">
+            Reset
+          </button>
+        </div>
+      </aside>
+
+      <!-- Products Grid -->
+      <section class="products-section">
+        <!-- Header Bar -->
+        <div class="products-header-bar">
+          <span class="products-count" id="products-count"
+            >Showing 12 products</span
+          >
+          <select class="products-sort" id="sort-by" onchange="applyFilters()">
+            <option value="popular">Most Popular</option>
+            <option value="newest">Newest</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+            <option value="rating">Top Rated</option>
+          </select>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="product-grid" id="products-grid">
+          <!-- Product 1 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(1)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Midnight+Oud"
+              alt="Midnight Oud"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Designer</p>
+              <h3 class="product-title">Midnight Oud</h3>
+              <p class="product-price">₦45,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-1">
+                  <option value="100ml" data-price="45000">
+                    100ml - ₦45,000
+                  </option>
+                  <option value="50ml" data-price="32000">
+                    50ml - ₦32,000
+                  </option>
+                  <option value="30ml" data-price="21000">
+                    30ml - ₦21,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(1, 'Midnight Oud')">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 2 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(2)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Rose+Noir"
+              alt="Rose Noir"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Oil Perfume</p>
+              <h3 class="product-title">Rose Noir</h3>
+              <p class="product-price">₦38,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-2">
+                  <option value="30ml" data-price="38000">
+                    30ml - ₦38,000
+                  </option>
+                  <option value="20ml" data-price="28000">
+                    20ml - ₦28,000
+                  </option>
+                  <option value="10ml" data-price="18000">
+                    10ml - ₦18,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(2, 'Rose Noir')">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 3 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(3)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Amber+Mystique"
+              alt="Amber Mystique"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Designer</p>
+              <h3 class="product-title">Amber Mystique</h3>
+              <p class="product-price">₦52,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-3">
+                  <option value="100ml" data-price="52000">
+                    100ml - ₦52,000
+                  </option>
+                  <option value="50ml" data-price="38000">
+                    50ml - ₦38,000
+                  </option>
+                  <option value="30ml" data-price="25000">
+                    30ml - ₦25,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(3, 'Amber Mystique')">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 4 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(4)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Citrus+Bliss"
+              alt="Citrus Bliss"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Oil Perfume</p>
+              <h3 class="product-title">Citrus Bliss</h3>
+              <p class="product-price">₦32,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-4">
+                  <option value="30ml" data-price="32000">
+                    30ml - ₦32,000
+                  </option>
+                  <option value="20ml" data-price="24000">
+                    20ml - ₦24,000
+                  </option>
+                  <option value="10ml" data-price="15000">
+                    10ml - ₦15,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(4, 'Citrus Bliss')">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 5 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(5)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Woody+Elegance"
+              alt="Woody Elegance"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Designer</p>
+              <h3 class="product-title">Woody Elegance</h3>
+              <p class="product-price">₦48,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-5">
+                  <option value="100ml" data-price="48000">
+                    100ml - ₦48,000
+                  </option>
+                  <option value="50ml" data-price="35000">
+                    50ml - ₦35,000
+                  </option>
+                  <option value="30ml" data-price="22000">
+                    30ml - ₦22,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(5, 'Woody Elegance')">Add</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Product 6 -->
+          <div
+            class="product-card floating-card-light"
+            onclick="viewProduct(6)"
+          >
+            <img
+              src="https://via.placeholder.com/300x400/000000/ffffff?text=Oriental+Spice"
+              alt="Oriental Spice"
+              class="product-image"
+            />
+            <div class="product-info">
+              <p class="product-category">Oil Perfume</p>
+              <h3 class="product-title">Oriental Spice</h3>
+              <p class="product-price">₦42,000</p>
+              <div class="product-actions" onclick="event.stopPropagation()">
+                <select id="size-6">
+                  <option value="30ml" data-price="42000">
+                    30ml - ₦42,000
+                  </option>
+                  <option value="20ml" data-price="32000">
+                    20ml - ₦32,000
+                  </option>
+                  <option value="10ml" data-price="20000">
+                    10ml - ₦20,000
+                  </option>
+                </select>
+                <button onclick="quickAdd(6, 'Oriental Spice')">Add</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pagination -->
+        <div style="margin-top: 3rem; display: flex; justify-content: center">
+          <ul class="pagination">
+            <li class="page-item">
+              <a href="#" class="page-link active">1</a>
+            </li>
+            <li class="page-item"><a href="#" class="page-link">2</a></li>
+            <li class="page-item"><a href="#" class="page-link">3</a></li>
+            <li class="page-item"><a href="#" class="page-link">4</a></li>
+            <li class="page-item"><a href="#" class="page-link">5</a></li>
+          </ul>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="footer-section">
+          <img
+            src="../assets/logo.png"
+            alt="Scentbysally"
+            style="height: 40px; margin-bottom: 1rem"
+            class="logo"
+          />
+          <p style="color: var(--gray-light)">
+            Luxury perfumes for every occasion.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact</h3>
+          <p style="color: var(--gray-light)">09169701140</p>
+          <p style="color: var(--gray-light)">hello@scentbysally.com</p>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>AiA Tech Innovations.</p>
+        <p>&copy; 2026 Scentbysally. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/cart.js"></script>
+    <script>
+      // Initialize
+      document.addEventListener("DOMContentLoaded", function () {
+        updateCartCount();
+      });
+
+      // View product details
+      function viewProduct(productId) {
+        window.location.href = `product.html?id=${productId}`;
+      }
+
+      // Quick add to cart
+      function quickAdd(productId, productName) {
+        const select = document.getElementById(`size-${productId}`);
+        const selectedOption = select.options[select.selectedIndex];
+        const size = select.value;
+        const price = parseInt(selectedOption.dataset.price);
+
+        const product = {
+          id: productId,
+          name: productName,
+          price: price,
+          image: `https://via.placeholder.com/300x400/000000/ffffff?text=${productName.replace(" ", "+")}`,
+        };
+
+        addToCart(product, size, 1);
+        event.stopPropagation();
+      }
+
+      // Apply filters (simulated)
+      function applyFilters() {
+        console.log("Applying filters...");
+        // In real app, would fetch filtered products from backend
+        showNotification("Filters applied", "info");
+      }
+
+      // Reset all filters
+      function resetFilters() {
+        document
+          .querySelectorAll(".filter-checkbox")
+          .forEach((cb) => (cb.checked = false));
+        document.getElementById("min-price").value = "";
+        document.getElementById("max-price").value = "";
+        document.getElementById("sort-by").value = "popular";
+        applyFilters();
+        showNotification("Filters reset", "info");
+      }
+    </script>
+  </body>
+</html>
