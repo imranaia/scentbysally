@@ -5,6 +5,7 @@ const express = require("express");
 const session = require("express-session");
 
 const { migrate } = require("./db");
+const { ensureSuperadminSeeded } = require("./seedSuperadmin");
 const SqliteSessionStore = require("./middleware/sessionStore");
 const { attachUser, requireRole } = require("./middleware/auth");
 const authRoutes = require("./routes/auth.routes");
@@ -59,12 +60,21 @@ app.use((req, res) => {
 });
 
 migrate()
-  .then(() => {
+  .then(async () => {
+    // Runs on every boot, not just once: quietly no-ops once the account
+    // already exists (or if the env vars aren't set at all), so this is
+    // safe to leave in permanently rather than needing a one-off Shell
+    // command - useful on hosts (like Render's Free plan) with no Shell.
+    const seedResult = await ensureSuperadminSeeded();
+    if (seedResult.created) {
+      console.log(`Seeded superadmin "${seedResult.name}" <${seedResult.email}> (id=${seedResult.id}).`);
+    }
+
     app.listen(PORT, () => {
       console.log(`Scentbysally server running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("Failed to run database migration:", err);
+    console.error("Failed to start up:", err);
     process.exit(1);
   });
