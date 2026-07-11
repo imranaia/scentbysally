@@ -1,6 +1,6 @@
 require("dotenv").config();
 
-const db = require("./db");
+const { client, migrate } = require("./db");
 const { hashPassword } = require("./utils/password");
 
 const {
@@ -9,28 +9,40 @@ const {
   SEED_SUPERADMIN_PASSWORD,
 } = process.env;
 
-if (!SEED_SUPERADMIN_EMAIL || !SEED_SUPERADMIN_PASSWORD) {
-  console.error(
-    "Set SEED_SUPERADMIN_NAME, SEED_SUPERADMIN_EMAIL, and SEED_SUPERADMIN_PASSWORD in backend/.env before seeding."
+async function main() {
+  if (!SEED_SUPERADMIN_EMAIL || !SEED_SUPERADMIN_PASSWORD) {
+    console.error(
+      "Set SEED_SUPERADMIN_NAME, SEED_SUPERADMIN_EMAIL, and SEED_SUPERADMIN_PASSWORD in backend/.env before seeding."
+    );
+    process.exit(1);
+  }
+
+  await migrate();
+
+  const email = SEED_SUPERADMIN_EMAIL.toLowerCase().trim();
+  const existingResult = await client.execute({
+    sql: "SELECT id FROM users WHERE email = ?",
+    args: [email],
+  });
+  const existing = existingResult.rows[0];
+
+  if (existing) {
+    console.log(`Superadmin ${SEED_SUPERADMIN_EMAIL} already exists (id=${existing.id}) - nothing to do.`);
+    return;
+  }
+
+  const insertResult = await client.execute({
+    sql: "INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'superadmin')",
+    args: [SEED_SUPERADMIN_NAME || "Sally", email, hashPassword(SEED_SUPERADMIN_PASSWORD)],
+  });
+
+  console.log(
+    `Created superadmin "${SEED_SUPERADMIN_NAME || "Sally"}" <${SEED_SUPERADMIN_EMAIL}> (id=${Number(insertResult.lastInsertRowid)}).`
   );
-  process.exit(1);
 }
 
-const existing = db
-  .prepare("SELECT id FROM users WHERE email = ?")
-  .get(SEED_SUPERADMIN_EMAIL.toLowerCase().trim());
-
-if (existing) {
-  console.log(`Superadmin ${SEED_SUPERADMIN_EMAIL} already exists (id=${existing.id}) - nothing to do.`);
-  process.exit(0);
-}
-
-const info = db
-  .prepare("INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, 'superadmin')")
-  .run(
-    SEED_SUPERADMIN_NAME || "Sally",
-    SEED_SUPERADMIN_EMAIL.toLowerCase().trim(),
-    hashPassword(SEED_SUPERADMIN_PASSWORD)
-  );
-
-console.log(`Created superadmin "${SEED_SUPERADMIN_NAME || "Sally"}" <${SEED_SUPERADMIN_EMAIL}> (id=${info.lastInsertRowid}).`);
+main()
+  .catch((err) => {
+    console.error("Seed failed:", err);
+    process.exitCode = 1;
+  });

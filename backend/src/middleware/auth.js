@@ -1,17 +1,21 @@
-const db = require("../db");
-
-const getUserStmt = db.prepare(
-  "SELECT id, name, email, role, phone, created_at FROM users WHERE id = ?"
-);
+const { client } = require("../db");
 
 // Runs on every request: if the session has a logged-in user id, load the
 // (safe, no password_hash) user record onto req.user. Doesn't reject
 // unauthenticated requests - that's requireAuth's job - so public routes
 // can still optionally read req.user (e.g. "is this buyer logged in?").
-function attachUser(req, res, next) {
+async function attachUser(req, res, next) {
   if (req.session?.userId) {
-    req.user = getUserStmt.get(req.session.userId) || null;
-    if (!req.user) req.session.userId = null; // stale session, user was deleted
+    try {
+      const result = await client.execute({
+        sql: "SELECT id, name, email, role, phone, created_at FROM users WHERE id = ?",
+        args: [req.session.userId],
+      });
+      req.user = result.rows[0] || null;
+      if (!req.user) req.session.userId = null; // stale session, user was deleted
+    } catch (err) {
+      return next(err);
+    }
   }
   next();
 }

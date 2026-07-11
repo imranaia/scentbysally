@@ -4,6 +4,7 @@ const path = require("node:path");
 const express = require("express");
 const session = require("express-session");
 
+const { migrate } = require("./db");
 const SqliteSessionStore = require("./middleware/sessionStore");
 const { attachUser, requireRole } = require("./middleware/auth");
 const authRoutes = require("./routes/auth.routes");
@@ -57,6 +58,13 @@ app.use((req, res) => {
   res.status(404).json({ error: "Not found" });
 });
 
-app.listen(PORT, () => {
-  console.log(`Scentbysally server running at http://localhost:${PORT}`);
-});
+migrate()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Scentbysally server running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.error("Failed to run database migration:", err);
+    process.exit(1);
+  });

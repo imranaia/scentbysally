@@ -1,23 +1,19 @@
 const session = require("express-session");
-const db = require("../db");
+const { client } = require("../db");
 
 // Minimal SQLite-backed express-session store on top of our own db.js, so we
 // don't need a separate package (connect-sqlite3) just to persist sessions.
+// express-session's Store interface is callback-based, but @libsql/client is
+// promise-based, so each method awaits internally and calls back with the
+// resolved/rejected result.
 class SqliteSessionStore extends session.Store {
-  constructor() {
-    super();
-    this.getStmt = db.prepare("SELECT sess, expires FROM sessions WHERE sid = ?");
-    this.setStmt = db.prepare(
-      "INSERT INTO sessions (sid, sess, expires) VALUES (?, ?, ?) " +
-        "ON CONFLICT(sid) DO UPDATE SET sess = excluded.sess, expires = excluded.expires"
-    );
-    this.destroyStmt = db.prepare("DELETE FROM sessions WHERE sid = ?");
-    this.pruneStmt = db.prepare("DELETE FROM sessions WHERE expires < ?");
-  }
-
-  get(sid, callback) {
+  async get(sid, callback) {
     try {
-      const row = this.getStmt.get(sid);
+      const result = await client.execute({
+        sql: "SELECT sess, expires FROM sessions WHERE sid = ?",
+        args: [sid],
+      });
+      const row = result.rows[0];
       if (!row || row.expires < Date.now()) return callback(null, null);
       callback(null, JSON.parse(row.sess));
     } catch (err) {
@@ -25,20 +21,25 @@ class SqliteSessionStore extends session.Store {
     }
   }
 
-  set(sid, sessionData, callback) {
+  async set(sid, sessionData, callback) {
     try {
       const maxAge = sessionData.cookie?.maxAge ?? 24 * 60 * 60 * 1000;
       const expires = Date.now() + maxAge;
-      this.setStmt.run(sid, JSON.stringify(sessionData), expires);
+      await client.execute({
+        sql:
+          "INSERT INTO sessions (sid, sess, expires) VALUES (?, ?, ?) " +
+          "ON CONFLICT(sid) DO UPDATE SET sess = excluded.sess, expires = excluded.expires",
+        args: [sid, JSON.stringify(sessionData), expires],
+      });
       callback?.(null);
     } catch (err) {
       callback?.(err);
     }
   }
 
-  destroy(sid, callback) {
+  async destroy(sid, callback) {
     try {
-      this.destroyStmt.run(sid);
+      await client.execute({ sql: "DELETE FROM sessions WHERE sid = ?", args: [sid] });
       callback?.(null);
     } catch (err) {
       callback?.(err);
@@ -49,8 +50,8 @@ class SqliteSessionStore extends session.Store {
     this.set(sid, sessionData, callback);
   }
 
-  prune() {
-    this.pruneStmt.run(Date.now());
+  async prune() {
+    await client.execute({ sql: "DELETE FROM sessions WHERE expires < ?", args: [Date.now()] });
   }
 }
 
