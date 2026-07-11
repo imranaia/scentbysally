@@ -1,8 +1,8 @@
 const session = require("express-session");
 const db = require("../db");
 
-// Minimal SQLite-backed express-session store using node:sqlite, so we don't
-// need a native module (connect-sqlite3) just to persist sessions.
+// Minimal SQLite-backed express-session store on top of our own db.js, so we
+// don't need a separate package (connect-sqlite3) just to persist sessions.
 class SqliteSessionStore extends session.Store {
   constructor() {
     super();
