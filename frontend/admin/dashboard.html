@@ -396,24 +396,9 @@
     <script src="../js/main.js"></script>
     <script>
       // Initialize
-      document.addEventListener("DOMContentLoaded", function () {
-        // Check if user is authenticated and is admin (not superadmin)
-        if (
-          !Scentbysally.isAuthenticated ||
-          (Scentbysally.userRole !== "admin" &&
-            Scentbysally.userRole !== "superadmin")
-        ) {
-          window.location.href = "../login.html";
-          return;
-        }
+      document.addEventListener("DOMContentLoaded", async function () {
+        await requireAuth(["admin", "superadmin"]);
       });
-
-      // Logout function
-      function logout() {
-        event.preventDefault();
-        localStorage.removeItem("scentbysally_user");
-        window.location.href = "../index.html";
-      }
     </script>
   </body>
 </html>

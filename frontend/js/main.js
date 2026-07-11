@@ -10,55 +10,78 @@ const Scentbysally = {
 };
 
 // ===== INITIALIZATION =====
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     console.log('Scentbysally loaded');
-    
-    // Load user from localStorage if exists
-    loadUser();
-    
+
+    // Ask the server who (if anyone) is logged in for this session
+    await checkAuth();
+
     // Load cart from localStorage
     loadCart();
-    
+
     // Update cart count in navbar
     updateCartCount();
-    
+
     // Initialize forms
     initForms();
-    
+
     // Initialize mobile menu
     initMobileMenu();
-    
+
     // Check current page and initialize specific functions
     const currentPage = window.location.pathname.split('/').pop();
     initPageSpecific(currentPage);
 });
 
 // ===== USER MANAGEMENT =====
-function loadUser() {
-    const savedUser = localStorage.getItem('scentbysally_user');
-    if (savedUser) {
-        Scentbysally.user = JSON.parse(savedUser);
-        Scentbysally.isAuthenticated = true;
-        Scentbysally.userRole = Scentbysally.user.role;
-        updateNavForAuth();
+// The server session (an httpOnly cookie) is the real source of truth for
+// who's logged in - there is no client-readable token to cache, so every
+// page asks /api/auth/me once per load. Concurrent callers (this file's own
+// DOMContentLoaded handler and any page that calls requireAuth()) share one
+// underlying request instead of firing it twice.
+let currentUserPromise = null;
+
+function fetchCurrentUser() {
+    if (!currentUserPromise) {
+        currentUserPromise = fetch('/api/auth/me', { credentials: 'same-origin' })
+            .then(res => (res.ok ? res.json() : null))
+            .catch(() => null);
     }
+    return currentUserPromise;
 }
 
-function saveUser(userData) {
-    localStorage.setItem('scentbysally_user', JSON.stringify(userData));
-    Scentbysally.user = userData;
-    Scentbysally.isAuthenticated = true;
-    Scentbysally.userRole = userData.role;
+function setCurrentUser(user) {
+    Scentbysally.user = user;
+    Scentbysally.isAuthenticated = Boolean(user);
+    Scentbysally.userRole = user ? user.role : null;
     updateNavForAuth();
+}
+
+async function checkAuth() {
+    const user = await fetchCurrentUser();
+    setCurrentUser(user);
+    return user;
+}
+
+// For pages that must be gated by role (admin/superadmin sections): awaits
+// the real session check and redirects to login if it fails, instead of
+// trusting a client-side flag that could be stale or spoofed.
+async function requireAuth(allowedRoles) {
+    const user = await checkAuth();
+    if (!user || (allowedRoles && !allowedRoles.includes(user.role))) {
+        window.location.href = '/login.html';
+        return null;
+    }
+    return user;
 }
 
 function logout() {
-    localStorage.removeItem('scentbysally_user');
-    Scentbysally.user = null;
-    Scentbysally.isAuthenticated = false;
-    Scentbysally.userRole = null;
-    updateNavForAuth();
-    window.location.href = '/index.html';
+    fetch('/api/auth/logout', { method: 'POST', credentials: 'same-origin' })
+        .finally(() => {
+            currentUserPromise = null;
+            setCurrentUser(null);
+            window.location.href = '/index.html';
+        });
 }
 
 function updateNavForAuth() {
@@ -308,95 +331,123 @@ function initForms() {
     }
 }
 
-// Demo-only stand-in for a real auth check: since there's no backend,
-// derive the role from the email address (e.g. superadmin@scentbysally.com).
-function getRoleFromEmail(email) {
-    const lower = email.toLowerCase();
-    if (lower.includes('superadmin')) return 'superadmin';
-    if (lower.includes('admin')) return 'admin';
-    return 'buyer';
-}
-
-function handleLogin(e) {
+async function handleLogin(e) {
     e.preventDefault();
-    
-    const email = document.getElementById('email')?.value;
-    const password = document.getElementById('password')?.value;
-    
-    // Simple validation
+
+    // Scoped to the submitted form - see handleRegister for why (duplicate
+    // ids between the login and register forms on login.html).
+    const form = e.target;
+    const email = form.querySelector('#email')?.value;
+    const password = form.querySelector('#password')?.value;
+
     if (!email || !password) {
         showNotification('Please fill in all fields', 'error');
         return;
     }
-    
-    // For demo - would be replaced with actual API call
-    console.log('Login attempt:', { email, password });
 
-    // Simulate successful login
-    const mockUser = {
-        id: 1,
-        name: email.split('@')[0],
-        email: email,
-        role: getRoleFromEmail(email)
-    };
-    
-    saveUser(mockUser);
-    showNotification('Login successful!', 'success');
-    
-    // Redirect based on role
-    setTimeout(() => {
-        if (mockUser.role === 'superadmin') {
-            window.location.href = '/superadmin/dashboard.html';
-        } else if (mockUser.role === 'admin') {
-            window.location.href = '/admin/dashboard.html';
-        } else {
-            window.location.href = '/index.html';
+    try {
+        const res = await fetch('/api/auth/login', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            showNotification(data.error || 'Login failed', 'error');
+            return;
         }
-    }, 1000);
+
+        currentUserPromise = Promise.resolve(data);
+        setCurrentUser(data);
+        showNotification('Login successful!', 'success');
+
+        // Redirect based on the role the server assigned, not anything typed client-side
+        setTimeout(() => {
+            if (data.role === 'superadmin') {
+                window.location.href = '/superadmin/dashboard.html';
+            } else if (data.role === 'admin') {
+                window.location.href = '/admin/dashboard.html';
+            } else {
+                window.location.href = '/index.html';
+            }
+        }, 800);
+    } catch (err) {
+        showNotification('Could not reach the server. Please try again.', 'error');
+    }
 }
 
-function handleRegister(e) {
+async function handleRegister(e) {
     e.preventDefault();
-    
-    const name = document.getElementById('name')?.value;
-    const email = document.getElementById('email')?.value;
-    const password = document.getElementById('password')?.value;
-    const confirmPassword = document.getElementById('confirm-password')?.value;
-    
+
+    // Scoped to the submitted form, not document.getElementById: the login
+    // and register forms on login.html share ids ("email", "password"), so
+    // a global lookup would silently read the other (hidden, empty) form.
+    const form = e.target;
+    const name = form.querySelector('#name')?.value;
+    const email = form.querySelector('#email')?.value;
+    const password = form.querySelector('#password')?.value;
+    const confirmPassword = form.querySelector('#confirm-password')?.value;
+
     if (!name || !email || !password || !confirmPassword) {
         showNotification('Please fill in all fields', 'error');
         return;
     }
-    
+
     if (password !== confirmPassword) {
         showNotification('Passwords do not match', 'error');
         return;
     }
-    
-    console.log('Register attempt:', { name, email });
-    showNotification('Registration successful! Please login.', 'success');
-    
-    // Switch to login tab
-    showLoginForm();
+
+    try {
+        const res = await fetch('/api/auth/register', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ name, email, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+            showNotification(data.error || 'Registration failed', 'error');
+            return;
+        }
+
+        // Registering logs you in immediately (the server already started a session)
+        currentUserPromise = Promise.resolve(data);
+        setCurrentUser(data);
+        showNotification('Welcome to Scentbysally!', 'success');
+        setTimeout(() => { window.location.href = '/index.html'; }, 800);
+    } catch (err) {
+        showNotification('Could not reach the server. Please try again.', 'error');
+    }
 }
 
-function handleResetPassword(e) {
+async function handleResetPassword(e) {
     e.preventDefault();
-    
+
     const email = document.getElementById('reset-email')?.value;
-    
+
     if (!email) {
         showNotification('Please enter your email', 'error');
         return;
     }
-    
-    console.log('Reset password for:', email);
-    showNotification('Password reset link sent to your email', 'success');
-    
-    // Switch to login after a delay
-    setTimeout(() => {
-        showLoginForm();
-    }, 2000);
+
+    try {
+        const res = await fetch('/api/auth/forgot-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        showNotification(data.message || 'If that email is registered, a reset link has been sent.', 'success');
+        setTimeout(() => {
+            showLoginForm();
+        }, 2000);
+    } catch (err) {
+        showNotification('Could not reach the server. Please try again.', 'error');
+    }
 }
 
 function handleCheckout(e) {

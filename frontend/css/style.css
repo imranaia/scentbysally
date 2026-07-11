@@ -130,8 +130,7 @@ body {
   font-size: 1.5rem;
   font-weight: bold;
   color: var(--white);
-  margin-right: 29rem;
-}      
+}
 
 .nav-links {
   display: flex;

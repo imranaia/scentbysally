@@ -9,14 +9,7 @@
     <style>
       /* Page-specific styles */
 
-      .logo-title {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: var(--white);
-        margin-right: 55rem;
-      }
-
-      .admin-container {
+.admin-container {
         display: grid;
         grid-template-columns: 260px 1fr;
         gap: 2rem;
@@ -318,7 +311,7 @@
     <!-- Navigation -->
     <nav class="navbar">
       <img src="../assets/logo.png" alt="Scentbysally" class="logo" />
-      <p class="logo-title">Scentbysally</p>
+      <p class="logo-name">Scentbysally</p>
       <div class="nav-links">
         <a href="../login.html" class="nav-link" onclick="logout()">Logout</a>
       </div>
@@ -702,23 +695,9 @@
     <script src="../js/main.js"></script>
     <script>
       // Initialize
-      document.addEventListener("DOMContentLoaded", function () {
-        // Check if user is superadmin
-        if (
-          !Scentbysally.isAuthenticated ||
-          Scentbysally.userRole !== "superadmin"
-        ) {
-          window.location.href = "../login.html";
-          return;
-        }
+      document.addEventListener("DOMContentLoaded", async function () {
+        await requireAuth(["superadmin"]);
       });
-
-      // Logout function
-      function logout() {
-        event.preventDefault();
-        localStorage.removeItem("scentbysally_user");
-        window.location.href = "../index.html";
-      }
 
       // Search buyers
       function searchBuyers() {
