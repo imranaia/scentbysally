@@ -12,6 +12,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const isProduction = process.env.NODE_ENV === "production";
 
+// Render (and most PaaS hosts) terminate TLS at a proxy in front of us, so
+// without this Express thinks every request is plain HTTP - breaking the
+// "secure" cookie flag and the req.protocol used in password-reset emails.
+if (isProduction) app.set("trust proxy", 1);
+
 app.use(express.json());
 
 app.use(

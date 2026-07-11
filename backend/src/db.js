@@ -2,7 +2,9 @@ const path = require("node:path");
 const fs = require("node:fs");
 const { DatabaseSync } = require("node:sqlite");
 
-const dataDir = path.join(__dirname, "..", "data");
+// Overridable so a host with a persistent disk (e.g. Render) can point this
+// at its mounted volume instead of a path inside the deploy's own filesystem.
+const dataDir = process.env.DATA_DIR || path.join(__dirname, "..", "data");
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 
 const db = new DatabaseSync(path.join(dataDir, "scentbysally.db"));
